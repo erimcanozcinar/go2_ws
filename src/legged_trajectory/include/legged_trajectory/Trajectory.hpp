@@ -2,10 +2,10 @@
 #define TRAJECTORY_HPP
 
 #include "eigen3/Eigen/Dense"
-#include "legged_controllers/GamePad.hpp"
-#include "legged_controllers/GaitScheduler.hpp"
-#include "legged_controllers/ComTrajectory.hpp"
-#include "legged_controllers/FootSwingTrajectory.hpp"
+#include "legged_common/GamePad.hpp"
+#include "legged_trajectory/GaitScheduler.hpp"
+#include "legged_trajectory/ComTrajectory.hpp"
+#include "legged_trajectory/FootSwingTrajectory.hpp"
 #include "legged_common/kinematics.hpp"
 #include "legged_common/DataTypes.hpp"
 

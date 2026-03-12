@@ -1,4 +1,4 @@
-#include "legged_controllers/GamePad.hpp"
+#include "legged_common/GamePad.hpp"
 
 void GamePad::intiSDL2() {
     const char* mapping = "050000004c050000cc09000001000000,Sony DualShock 4,a:b1,b:b2,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:a3,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:a4,rightx:a2,righty:a5,start:b9,touchpad:b13,x:b0,y:b3,platform:Linux,";

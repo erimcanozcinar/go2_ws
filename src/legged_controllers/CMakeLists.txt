@@ -12,7 +12,8 @@ find_package(catkin REQUIRED
         legged_common
         #legged_interface
         #legged_wbc
-        #legged_estimation
+        legged_estimator
+        legged_trajectory
         controller_interface
         #ocs2_legged_robot_ros
         #ocs2_self_collision_visualization
@@ -47,7 +48,8 @@ catkin_package(
         legged_common
         #legged_interface
         #legged_wbc
-        #legged_estimation
+        legged_estimator
+        legged_trajectory
         controller_interface
         #ocs2_legged_robot_ros
         #ocs2_self_collision_visualization
@@ -76,19 +78,13 @@ link_directories(
 add_library(${PROJECT_NAME}
         src/LeggedGo2SquatController.cpp
         src/LeggedGo2TabletController.cpp
-        src/ComTrajectory.cpp
-        src/GaitScheduler.cpp
-        src/FootSwingTrajectory.cpp
-        src/trajectory.cpp
-        src/StateEstimator.cpp
         src/BalanceController.cpp
         src/MPC.cpp
         src/WBC.cpp
         src/TaskSet/BodyOriTask.cpp
         src/TaskSet/BodyPosTask.cpp
         src/TaskSet/FootPosTask.cpp
-        src/TaskSet/SingleContactTask.cpp
-        src/GamePad.cpp        
+        src/TaskSet/SingleContactTask.cpp      
 )
 
 target_link_libraries(${PROJECT_NAME}

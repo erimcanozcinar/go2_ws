@@ -1,4 +1,4 @@
-#include "legged_controllers/ComTrajectory.hpp"
+#include "legged_trajectory/ComTrajectory.hpp"
 
 
 ComTrajectory::ComTrajectory(double _dt) : dT(_dt) {

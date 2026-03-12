@@ -5,7 +5,7 @@
 #include "eigen3/unsupported/Eigen/MatrixFunctions"
 #include <qpOASES.hpp>
 #include "legged_common/DataTypes.hpp"
-#include "legged_controllers/GaitScheduler.hpp"
+#include "legged_trajectory/GaitScheduler.hpp"
 
 #define BIG_NUM 5e10
 #define GRAVITY 9.81

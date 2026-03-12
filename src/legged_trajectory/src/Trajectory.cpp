@@ -1,4 +1,4 @@
-#include "legged_controllers/trajectory.hpp"
+#include "legged_trajectory/Trajectory.hpp"
 
 Trajectory::Trajectory(double _dT) : dT(_dT), comTraj(_dT) {
     jStick.intiSDL2();

@@ -1,4 +1,4 @@
-#include "legged_controllers/GaitScheduler.hpp"
+#include "legged_trajectory/GaitScheduler.hpp"
 #include <cmath>  // fmod, abs
 #include <iostream>
 

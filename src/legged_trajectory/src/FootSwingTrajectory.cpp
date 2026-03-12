@@ -1,4 +1,4 @@
-#include "legged_controllers/FootSwingTrajectory.hpp"
+#include "legged_trajectory/FootSwingTrajectory.hpp"
 
 void FootSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh)
 {    

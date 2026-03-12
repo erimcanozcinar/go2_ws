@@ -28,8 +28,8 @@
 
 #include <eigen3/Eigen/Dense>
 
-#include "legged_controllers/trajectory.hpp"
-#include "legged_controllers/StateEstimator.hpp"
+#include "legged_trajectory/Trajectory.hpp"
+#include "legged_estimator/StateEstimator.hpp"
 #include "legged_controllers/BalanceController.hpp"
 #include "legged_controllers/MPC.hpp"
 #include "legged_controllers/WBC.hpp"

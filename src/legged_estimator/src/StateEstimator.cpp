@@ -1,4 +1,4 @@
-#include "legged_controllers/StateEstimator.hpp"
+#include "legged_estimator/StateEstimator.hpp"
 
 BasePosVelEstimator::BasePosVelEstimator(double dT) : dt(dT) {
     // Initialize state vector x

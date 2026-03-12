@@ -13,7 +13,8 @@
     <depend>roscpp</depend>
     <depend>legged_common</depend>
     <depend>legged_interface</depend>
-    <depend>legged_estimation</depend>
+    <depend>legged_estimator</depend>
+    <depend>legged_trajectory</depend>
     <depend>legged_wbc</depend>
 
     <depend>controller_interface</depend>

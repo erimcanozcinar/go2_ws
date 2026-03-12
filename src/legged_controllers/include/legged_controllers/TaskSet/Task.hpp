@@ -4,7 +4,7 @@
 #include "eigen3/Eigen/Dense"
 #include "legged_common/kinematics.hpp"
 #include "legged_common/parameters.hpp"
-#include "legged_controllers/StateEstimator.hpp"
+#include "legged_estimator/StateEstimator.hpp"
 #include "legged_common/DataTypes.hpp"
 
 

@@ -9,6 +9,9 @@ find_package(catkin REQUIRED
         hardware_interface
         )
 
+find_package(SDL2 REQUIRED)
+find_package(Eigen3 REQUIRED)
+
 catkin_package(
         INCLUDE_DIRS
         include
@@ -22,12 +25,16 @@ catkin_package(
 
 include_directories(
         include
+        "/usr/include/eigen3"
         ${catkin_INCLUDE_DIRS}
+        ${Eigen3_INCLUDE_DIRS}
+        ${SDL2_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
         src/kinematics.cpp
         src/matTools.cpp
+        src/GamePad.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
