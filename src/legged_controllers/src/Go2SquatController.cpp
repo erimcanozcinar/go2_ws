@@ -1,4 +1,4 @@
-#include <legged_controllers/LeggedGo2SquatController.h>
+#include <legged_controllers/Go2SquatController.h>
 #include <pluginlib/class_list_macros.hpp>
 
 namespace legged
@@ -17,10 +17,10 @@ namespace legged
  * Subscribes to:
  * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
  */
-  LeggedGo2SquatController::LeggedGo2SquatController() {}
-  LeggedGo2SquatController::~LeggedGo2SquatController() {sub_command_.shutdown();}
+  Go2SquatController::Go2SquatController() {}
+  Go2SquatController::~Go2SquatController() {sub_command_.shutdown();}
 
-  bool LeggedGo2SquatController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle &n)
+  bool Go2SquatController::init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle &n)
   {
     ROS_INFO("SquatController Go2 | Init");
 
@@ -82,12 +82,12 @@ namespace legged
 
     commands_buffer_.writeFromNonRT(std::vector<double>(2, 0.0));
 
-    sub_command_ = n.subscribe("legged_squat_command", 1, &LeggedGo2SquatController::commandCB, this);
+    sub_command_ = n.subscribe("legged_squat_command", 1, &Go2SquatController::commandCB, this);
 
     return true;
   }
 
-  void LeggedGo2SquatController::starting(const ros::Time& time)
+  void Go2SquatController::starting(const ros::Time& time)
   {
     ROS_INFO("SquatController Go2 | Starting");
 
@@ -112,7 +112,7 @@ namespace legged
     initial_time = ros::Time::now();
   }
 
-  void LeggedGo2SquatController::update(const ros::Time& time, const ros::Duration& period)
+  void Go2SquatController::update(const ros::Time& time, const ros::Duration& period)
   {
     std::vector<double> & commands = *commands_buffer_.readFromRT();
     real_time = (time - initial_time).toSec();
@@ -167,11 +167,11 @@ namespace legged
     }      
   }
 
-  void LeggedGo2SquatController::commandCB(const std_msgs::Float64MultiArray& msg)
+  void Go2SquatController::commandCB(const std_msgs::Float64MultiArray& msg)
   {
     commands_buffer_.writeFromNonRT(msg.data);
   }
 
 } // legged
 
-PLUGINLIB_EXPORT_CLASS( legged::LeggedGo2SquatController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS( legged::Go2SquatController, controller_interface::ControllerBase)

@@ -1,0 +1,283 @@
+#include <legged_controllers/Go2BalanceController.h>
+#include <pluginlib/class_list_macros.hpp>
+
+namespace legged
+{
+
+  /**
+   * \brief Forward command controller for a set of effort controlled joints (torque or force).
+   *
+   * This class forwards the commanded efforts down to a set of joints.
+   *
+   * \section ROS interface
+   *
+   * \param type Must be "JointGroupEffortController".
+   * \param joints List of names of the joints to control.
+   *
+   * Subscribes to:
+   * - \b command (std_msgs::Float64MultiArray) : The joint efforts to apply
+   */
+  Go2BalanceController::Go2BalanceController() {}
+  Go2BalanceController::~Go2BalanceController() {
+    delete unitreeGo2;
+    delete traj;
+    delete estimator;
+    delete balanceController;
+  }//sub_command_.shutdown(); }
+
+  bool Go2BalanceController::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &n)
+  {
+    ROS_INFO("Go2BalanceController | Init");
+
+    go2Model = RigidBodyModel("/home/erim/test_ws/src/legged_examples/legged_unitree/legged_unitree_description/urdf/go2/go2.urdf");
+    unitreeGo2 = new Robot();
+    traj = new Trajectory(0.002);
+    estimator = new Estimator(unitreeGo2, 0.002);
+    balanceController = new BalanceController(&estResult);
+    
+    lowStates.imu.acc.setZero();
+    lowStates.imu.gyro.setZero();
+    lowStates.imu.orientation.setZero();
+    lowStates.imu.rotationMatrix.setIdentity();
+
+    for(int i=0; i<4; i++) {
+        lowStates.qJoint[i].setZero();
+        lowStates.dqJoint[i].setZero();
+        Tau_ff[i].setZero();
+        qRef[i].setZero();
+        dqRef[i].setZero();
+        kpJoint[i].setZero();
+        kdJoint[i].setZero();
+    }
+
+    kpCartesian << 400, 0, 0,
+                    0, 400, 0,
+                    0, 0, 400;
+    kdCartesian << 10, 0, 0,
+                    0, 10, 0,
+                    0, 0, 10;
+
+    qJoint_ref.resize(12);
+    qJoint_ref.setZero();
+    dqJoint_ref.resize(12);
+    dqJoint_ref.setZero();
+    Tau_go2.resize(12);
+    Tau_go2.setZero();
+    Kp.resize(12);
+    Kd.resize(12);
+    Kp.setZero();
+    Kd.setZero();
+
+    genCoor.resize(19);
+    genVel.resize(18);
+    genAcc.resize(18);
+    genCoor.setZero();
+    genVel.setZero();
+    genAcc.setZero();
+    tauGravity.resize(18);
+    tauInvDyn.resize(18);
+    tauGravity.setZero();
+    tauInvDyn.setZero();
+
+    hw_eff = robot_hw->get<HybridJointInterface>();
+
+    joint_names_.push_back("RF_HAA");
+    joint_names_.push_back("RF_HFE");
+    joint_names_.push_back("RF_KFE");
+
+    joint_names_.push_back("LF_HAA");
+    joint_names_.push_back("LF_HFE");
+    joint_names_.push_back("LF_KFE");
+
+    joint_names_.push_back("RH_HAA");
+    joint_names_.push_back("RH_HFE");
+    joint_names_.push_back("RH_KFE");
+
+    joint_names_.push_back("LH_HAA");
+    joint_names_.push_back("LH_HFE");
+    joint_names_.push_back("LH_KFE");
+
+    n_joints_ = joint_names_.size();
+
+    for (unsigned int i = 0; i < n_joints_; i++)
+    {
+      const auto &joint_name = joint_names_[i];
+
+      try
+      {
+        joints_.push_back(hw_eff->getHandle(joint_name));
+      }
+      catch (const hardware_interface::HardwareInterfaceException &e)
+      {
+        ROS_ERROR_STREAM("Exception thrown: " << e.what());
+        return false;
+      }
+    }
+
+    ROS_INFO("Contact Init!");
+
+    auto *contactInterface = robot_hw->get<ContactSensorInterface>();
+
+    loadcells_.push_back(contactInterface->getHandle("LF_FOOT"));
+    loadcells_.push_back(contactInterface->getHandle("RF_FOOT"));
+    loadcells_.push_back(contactInterface->getHandle("LH_FOOT"));
+    loadcells_.push_back(contactInterface->getHandle("RH_FOOT"));
+
+    imu_ = robot_hw->get<hardware_interface::ImuSensorInterface>()->getHandle("base_imu");
+
+    ROS_INFO("IMU Done!");
+
+    
+    return true;
+  }
+
+  void Go2BalanceController::starting(const ros::Time &time)
+  {
+    ROS_INFO("Go2BalanceController | Starting");
+
+    lowStates.imu.orientation = estimator->orientationOffset(Quat(imu_.getOrientation()[3], 
+                                                                 imu_.getOrientation()[0], 
+                                                                 imu_.getOrientation()[1], 
+                                                                 imu_.getOrientation()[2]));
+    lowStates.imu.rotationMatrix = quaternionToRotationMatrix(lowStates.imu.orientation);
+    lowStates.imu.acc << imu_.getLinearAcceleration()[0], imu_.getLinearAcceleration()[1], imu_.getLinearAcceleration()[2];
+    lowStates.imu.gyro << imu_.getAngularVelocity()[0], imu_.getAngularVelocity()[1], imu_.getAngularVelocity()[2];
+    lowStates.qJoint[0] << joints_[0].getPosition(), joints_[1].getPosition(), joints_[2].getPosition();   // RF
+    lowStates.qJoint[1] << joints_[3].getPosition(), joints_[4].getPosition(), joints_[5].getPosition();   // LF
+    lowStates.qJoint[2] << joints_[6].getPosition(), joints_[7].getPosition(), joints_[8].getPosition();   // RB
+    lowStates.qJoint[3] << joints_[9].getPosition(), joints_[10].getPosition(), joints_[11].getPosition(); // LB
+    lowStates.dqJoint[0] << joints_[0].getVelocity(), joints_[1].getVelocity(), joints_[2].getVelocity();   // RF
+    lowStates.dqJoint[1] << joints_[3].getVelocity(), joints_[4].getVelocity(), joints_[5].getVelocity();   // LF
+    lowStates.dqJoint[2] << joints_[6].getVelocity(), joints_[7].getVelocity(), joints_[8].getVelocity();   // RB
+    lowStates.dqJoint[3] << joints_[9].getVelocity(), joints_[10].getVelocity(), joints_[11].getVelocity(); // LB
+    qRef[0] = lowStates.qJoint[0];
+    qRef[1] = lowStates.qJoint[1];
+    qRef[2] = lowStates.qJoint[2];
+    qRef[3] = lowStates.qJoint[3];
+    dqRef[0] = lowStates.dqJoint[0];
+    dqRef[1] = lowStates.dqJoint[1];
+    dqRef[2] = lowStates.dqJoint[2];
+    dqRef[3] = lowStates.dqJoint[3];
+
+    genCoor << 0, 0, 0, lowStates.imu.orientation, lowStates.qJoint[0], lowStates.qJoint[1], lowStates.qJoint[2], lowStates.qJoint[3];
+    genVel << 0, 0, 0, lowStates.imu.gyro, lowStates.dqJoint[0], lowStates.dqJoint[1], lowStates.dqJoint[2], lowStates.dqJoint[3];
+    genAcc << lowStates.imu.acc, 0, 0, 0, 0, 0, 0, 0;
+
+    std::cout << " Initial Joint Position: " << std::endl;
+    std::cout << qRef[0].transpose() << std::endl;
+    std::cout << qRef[1].transpose() << std::endl;
+    std::cout << qRef[2].transpose() << std::endl;
+    std::cout << qRef[3].transpose() << std::endl;
+    std::cout << " Initial Foot Position: " << std::endl;
+    std::cout << unitreeGo2->_RF.calcFootPos(lowStates.qJoint[0], FrameType::HIP).transpose() << std::endl;
+    std::cout << unitreeGo2->_LF.calcFootPos(lowStates.qJoint[1], FrameType::HIP).transpose() << std::endl;
+    std::cout << unitreeGo2->_RB.calcFootPos(lowStates.qJoint[2], FrameType::HIP).transpose() << std::endl;
+    std::cout << unitreeGo2->_LB.calcFootPos(lowStates.qJoint[3], FrameType::HIP).transpose() << std::endl;
+    
+    initial_time = ros::Time::now();
+    params_last_published = ros::Time::now();
+  }
+
+  void Go2BalanceController::update(const ros::Time &time, const ros::Duration &period)
+  {
+    // std::vector<double> &commands = *commands_buffer_.readFromRT();
+    real_time = (time - initial_time).toSec();
+    
+    /* #region: Get sensor data*/
+    lowStates.imu.orientation = estimator->orientationOffset(Quat(imu_.getOrientation()[3], 
+                                                                 imu_.getOrientation()[0], 
+                                                                 imu_.getOrientation()[1], 
+                                                                 imu_.getOrientation()[2]));
+    lowStates.imu.rotationMatrix = quaternionToRotationMatrix(lowStates.imu.orientation);
+    lowStates.imu.acc << imu_.getLinearAcceleration()[0], imu_.getLinearAcceleration()[1], imu_.getLinearAcceleration()[2];
+    lowStates.imu.gyro << imu_.getAngularVelocity()[0], imu_.getAngularVelocity()[1], imu_.getAngularVelocity()[2];
+    lowStates.qJoint[0] << joints_[0].getPosition(), joints_[1].getPosition(), joints_[2].getPosition();   // RF
+    lowStates.qJoint[1] << joints_[3].getPosition(), joints_[4].getPosition(), joints_[5].getPosition();   // LF
+    lowStates.qJoint[2] << joints_[6].getPosition(), joints_[7].getPosition(), joints_[8].getPosition();   // RB
+    lowStates.qJoint[3] << joints_[9].getPosition(), joints_[10].getPosition(), joints_[11].getPosition(); // LB
+    lowStates.dqJoint[0] << joints_[0].getVelocity(), joints_[1].getVelocity(), joints_[2].getVelocity();   // RF
+    lowStates.dqJoint[1] << joints_[3].getVelocity(), joints_[4].getVelocity(), joints_[5].getVelocity();   // LF
+    lowStates.dqJoint[2] << joints_[6].getVelocity(), joints_[7].getVelocity(), joints_[8].getVelocity();   // RB
+    lowStates.dqJoint[3] << joints_[9].getVelocity(), joints_[10].getVelocity(), joints_[11].getVelocity(); // LB
+    /* #endregion */
+
+    /* #region: STATE ESTIMATOR */
+    estimator->run(lowStates, traj->conState);
+    estResult = estimator->getResult();
+    /* #endregion */ 
+
+    /* #region: TRAJECTORY GENERATION WITH JOYSTICK */
+    traj->trajGeneration(estResult.vWorld, estResult.pFoot, estResult.pos, estResult.rWorld2Body);
+    // traj->trajGeneration(traj->Vcom_des, traj->pFoot, traj->Pcom_des, estResult.rWorld2Body);
+    /* #endregion */
+
+    /* #region: INVERSE KINEMATIC */
+    qRef[0] = unitreeGo2->_RF.calcJointPos(traj->pFoot[0]);
+    qRef[1] = unitreeGo2->_LF.calcJointPos(traj->pFoot[1]);
+    qRef[2] = unitreeGo2->_RB.calcJointPos(traj->pFoot[2]);
+    qRef[3] = unitreeGo2->_LB.calcJointPos(traj->pFoot[3]);
+    dqRef[0] = unitreeGo2->_RF.calcJointVel(traj->vFoot[0], qRef[0]);
+    dqRef[1] = unitreeGo2->_LF.calcJointVel(traj->vFoot[1], qRef[1]);
+    dqRef[2] = unitreeGo2->_RB.calcJointVel(traj->vFoot[2], qRef[2]);
+    dqRef[3] = unitreeGo2->_LB.calcJointVel(traj->vFoot[3], qRef[3]);
+    /* #endregion */
+
+    /* #region: FORCE DISTRIBUTION*/
+    balanceController->setDesiredStates(traj->getDesiredStates());
+    balanceController->run();
+    /* #endregion */
+
+    /* #region: GROUND REACTION FORCE AND FOOT IMPEDANCE */
+    footForce[0] = balanceController->getFootForces()[0] + (1-traj->conState[0])*kpCartesian*(traj->pFoot[0] - estResult.pFoot[0]) + kdCartesian*(traj->vFoot[0]-estResult.vFoot[0]);
+    footForce[1] = balanceController->getFootForces()[1] + (1-traj->conState[1])*kpCartesian*(traj->pFoot[1] - estResult.pFoot[1]) + kdCartesian*(traj->vFoot[1]-estResult.vFoot[1]);
+    footForce[2] = balanceController->getFootForces()[2] + (1-traj->conState[2])*kpCartesian*(traj->pFoot[2] - estResult.pFoot[2]) + kdCartesian*(traj->vFoot[2]-estResult.vFoot[2]);
+    footForce[3] = balanceController->getFootForces()[3] + (1-traj->conState[3])*kpCartesian*(traj->pFoot[3] - estResult.pFoot[3]) + kdCartesian*(traj->vFoot[3]-estResult.vFoot[3]);
+    Tau_ff[0] = unitreeGo2->_RF.calcLegJac(lowStates.qJoint[0]).transpose()*footForce[0];
+    Tau_ff[1] = unitreeGo2->_LF.calcLegJac(lowStates.qJoint[1]).transpose()*footForce[1];
+    Tau_ff[2] = unitreeGo2->_RB.calcLegJac(lowStates.qJoint[2]).transpose()*footForce[2];
+    Tau_ff[3] = unitreeGo2->_LB.calcLegJac(lowStates.qJoint[3]).transpose()*footForce[3];
+    /* #endregion */
+
+    for (int i = 0; i < 4; i++) {
+      if(traj->conState[i] > 0) {
+          kpJoint[i] = Eigen::Vector3d(0,0,0).asDiagonal();
+          kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();            
+      }else {
+          kpJoint[i] = Eigen::Vector3d(3,3,3).asDiagonal();
+          kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();
+      }
+      // kpJoint[i] = Eigen::Vector3d(10,10,10).asDiagonal();
+      // kdJoint[i] = Eigen::Vector3d(1,1,1).asDiagonal();
+      Kp(i*3) = kpJoint[i](0);
+      Kp(i*3+1) = kpJoint[i](1);
+      Kp(i*3+2) = kpJoint[i](2);
+      Kd(i*3) = kdJoint[i](0);
+      Kd(i*3+1) = kdJoint[i](1);
+      Kd(i*3+2) = kdJoint[i](2);
+    }
+    
+    Tau_go2 << Tau_ff[0], Tau_ff[1], Tau_ff[2], Tau_ff[3];
+    qJoint_ref << qRef[0], qRef[1], qRef[2], qRef[3];
+    dqJoint_ref << dqRef[0], dqRef[1], dqRef[2], dqRef[3];
+
+
+    /* #region: DAMPING MODE */
+    if(std::fabs(estResult.rpy(0)) > 70*M_PI/180 || std::fabs(estResult.rpy(1)) > 70*M_PI/180){
+      dampingMode = true;
+      std::cout << "Damping mode enabled" << std::endl;
+    }
+    /* #endregion */
+    
+    for (int i = 0; i < 12; i++) {      
+      if(dampingMode) {
+        joints_[i].setCommand(0, 0, 0, 2, 0);
+      } else {
+        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 0, 2, Tau_go2(i));
+      }
+    }
+
+  }
+
+} // legged
+
+PLUGINLIB_EXPORT_CLASS(legged::Go2BalanceController, controller_interface::ControllerBase)

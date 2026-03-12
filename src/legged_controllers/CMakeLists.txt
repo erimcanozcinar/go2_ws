@@ -76,15 +76,18 @@ link_directories(
 
 ## Declare a cpp library
 add_library(${PROJECT_NAME}
-        src/LeggedGo2SquatController.cpp
+        src/Go2SquatController.cpp
         src/LeggedGo2TabletController.cpp
-        src/BalanceController.cpp
-        src/MPC.cpp
-        src/WBC.cpp
-        src/TaskSet/BodyOriTask.cpp
-        src/TaskSet/BodyPosTask.cpp
-        src/TaskSet/FootPosTask.cpp
-        src/TaskSet/SingleContactTask.cpp      
+        src/Go2BalanceController.cpp
+        src/Go2MPC.cpp
+        src/Go2WBC.cpp
+        src/BalanceController/BalanceController.cpp
+        src/MPC/MPC.cpp
+        src/WBC/WBC.cpp
+        src/WBC/TaskSet/BodyOriTask.cpp
+        src/WBC/TaskSet/BodyPosTask.cpp
+        src/WBC/TaskSet/FootPosTask.cpp
+        src/WBC/TaskSet/SingleContactTask.cpp      
 )
 
 target_link_libraries(${PROJECT_NAME}

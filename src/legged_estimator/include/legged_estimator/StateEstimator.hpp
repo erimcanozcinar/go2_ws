@@ -5,6 +5,7 @@
 #include "legged_common/matTools.hpp"
 #include "legged_common/DataTypes.hpp"
 #include "legged_common/kinematics.hpp"
+#include "legged_common/parameters.hpp"
 
 class BasePosVelEstimator {
     public:

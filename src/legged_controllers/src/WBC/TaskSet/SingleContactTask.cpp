@@ -1,4 +1,4 @@
-#include "legged_controllers/TaskSet/SingleContactTask.hpp"
+#include "legged_controllers/WBC/TaskSet/SingleContactTask.hpp"
 
 SingleContactTask::SingleContactTask(Robot* _model, RobotStates* _lowStates, EstimatorData* _estData, int _legID) 
             : Task(3, "SingleContactTask"), model(_model), lowStates(_lowStates), estData(_estData), legID(_legID) {

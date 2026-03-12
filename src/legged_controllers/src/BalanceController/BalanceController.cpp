@@ -1,4 +1,4 @@
-#include "legged_controllers/BalanceController.hpp"
+#include "legged_controllers/BalanceController/BalanceController.hpp"
 
 
 BalanceController::BalanceController(EstimatorData* _estData) : qpSolver(12, 20), _est(_estData) {

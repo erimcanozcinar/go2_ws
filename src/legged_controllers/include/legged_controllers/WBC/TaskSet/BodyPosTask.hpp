@@ -1,7 +1,7 @@
 #ifndef BODY_POSITION_TASK_HPP
 #define BODY_POSITION_TASK_HPP
 
-#include "legged_controllers/TaskSet/Task.hpp"
+#include "legged_controllers/WBC/TaskSet/Task.hpp"
 
 class BodyPosTask : public Task {
     public:

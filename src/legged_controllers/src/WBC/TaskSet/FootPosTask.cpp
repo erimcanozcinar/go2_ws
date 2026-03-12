@@ -1,4 +1,4 @@
-#include "legged_controllers/TaskSet/FootPosTask.hpp"
+#include "legged_controllers/WBC/TaskSet/FootPosTask.hpp"
 
 FootPosTask::FootPosTask(Robot* _model, RobotStates* _lowStates, EstimatorData* _estData, int _legID) 
             : Task(3, "FootPosTask"), model(_model), lowStates(_lowStates), estData(_estData), legID(_legID) {

@@ -3,7 +3,7 @@
 BasePosVelEstimator::BasePosVelEstimator(double dT) : dt(dT) {
     // Initialize state vector x
     x.setZero();
-    x(2) = 0.3;
+    x(2) = initZc;
     y_hat.setZero();
 
     // Initialize covariance matrix P

@@ -31,29 +31,24 @@
 #include "legged_trajectory/Trajectory.hpp"
 #include "legged_estimator/StateEstimator.hpp"
 #include "legged_controllers/BalanceController/BalanceController.hpp"
-#include "legged_controllers/MPC/MPC.hpp"
-#include "legged_controllers/WBC/WBC.hpp"
 #include "rbdyn/RigidBodyModel.hpp"
 
 #include <cassert>
 #include <ctime>
 #include <memory>
-#include <thread>
-#include <mutex>
-#include <atomic>
 
 #include <chrono>
 
 namespace legged
 {
-class LeggedGo2TabletController : public controller_interface::MultiInterfaceController<HybridJointInterface, hardware_interface::ImuSensorInterface, ContactSensorInterface>
+class Go2BalanceController : public controller_interface::MultiInterfaceController<HybridJointInterface, hardware_interface::ImuSensorInterface, ContactSensorInterface>
 {
 
 typedef Eigen::Matrix<double, 12, 1> Vec12;
 
 public:
-    LeggedGo2TabletController();
-    ~LeggedGo2TabletController();
+    Go2BalanceController();
+    ~Go2BalanceController();
 
     bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle &n);
     void update(const ros::Time& time, const ros::Duration& dt);
@@ -85,8 +80,6 @@ private:
     Trajectory* traj = nullptr;    
     Estimator* estimator = nullptr;
     BalanceController* balanceController = nullptr;
-    ModelPredictiveControl* mpc = nullptr;
-    WBC* wbc = nullptr;
 
     Eigen::Matrix3d kpCartesian, kdCartesian;
     Eigen::Matrix3d kpJoint[4], kdJoint[4];

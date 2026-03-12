@@ -1,5 +1,5 @@
-#ifndef LEGGED_GO2_TABLET_CONTROLLER_H
-#define LEGGED_GO2_TABLET_CONTROLLER_H
+#ifndef GO2_WBC_H
+#define GO2_WBC_H
 
 // ROS Control includes
 #include <legged_common/hardware_interface/HybridJointInterface.h>
@@ -46,14 +46,14 @@
 
 namespace legged
 {
-class LeggedGo2TabletController : public controller_interface::MultiInterfaceController<HybridJointInterface, hardware_interface::ImuSensorInterface, ContactSensorInterface>
+class Go2WBC : public controller_interface::MultiInterfaceController<HybridJointInterface, hardware_interface::ImuSensorInterface, ContactSensorInterface>
 {
 
 typedef Eigen::Matrix<double, 12, 1> Vec12;
 
 public:
-    LeggedGo2TabletController();
-    ~LeggedGo2TabletController();
+    Go2WBC();
+    ~Go2WBC();
 
     bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle &n);
     void update(const ros::Time& time, const ros::Duration& dt);

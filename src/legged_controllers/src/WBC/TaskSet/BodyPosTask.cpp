@@ -1,4 +1,4 @@
-#include "legged_controllers/TaskSet/BodyPosTask.hpp"
+#include "legged_controllers/WBC/TaskSet/BodyPosTask.hpp"
 
 BodyPosTask::BodyPosTask(Robot* _model, EstimatorData* _estData) 
             : Task(3, "BodyPosTask"), model(_model), estData(_estData) {

@@ -31,14 +31,14 @@
 
 namespace legged
 {
-class LeggedGo2SquatController : public controller_interface::MultiInterfaceController<HybridJointInterface>
+class Go2SquatController : public controller_interface::MultiInterfaceController<HybridJointInterface>
 {
 
 typedef Eigen::Matrix<double, 12, 1> Vec12;
 
 public:
-    LeggedGo2SquatController();
-    ~LeggedGo2SquatController();
+    Go2SquatController();
+    ~Go2SquatController();
 
     bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle &n);
     void update(const ros::Time& time, const ros::Duration& dt);

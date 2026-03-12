@@ -1,4 +1,4 @@
-#include "legged_controllers/WBC.hpp"
+#include "legged_controllers/WBC/WBC.hpp"
 
 WBC::WBC(Robot* _model, EstimatorData* _estData, RobotStates* _lowStates) : model(_model), estData(_estData), lowStates(_lowStates) {
     _bodyPosTask = new BodyPosTask(model, estData);

@@ -5,10 +5,10 @@
 #include <vector>
 #include "legged_common/kinematics.hpp"
 #include "legged_common/parameters.hpp"
-#include "legged_controllers/TaskSet/SingleContactTask.hpp"
-#include "legged_controllers/TaskSet/BodyOriTask.hpp"
-#include "legged_controllers/TaskSet/BodyPosTask.hpp"
-#include "legged_controllers/TaskSet/FootPosTask.hpp"
+#include "legged_controllers/WBC/TaskSet/SingleContactTask.hpp"
+#include "legged_controllers/WBC/TaskSet/BodyOriTask.hpp"
+#include "legged_controllers/WBC/TaskSet/BodyPosTask.hpp"
+#include "legged_controllers/WBC/TaskSet/FootPosTask.hpp"
 
 class WBC {
     public:

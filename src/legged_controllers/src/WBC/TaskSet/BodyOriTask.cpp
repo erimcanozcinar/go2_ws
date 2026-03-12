@@ -1,4 +1,4 @@
-#include "legged_controllers/TaskSet/BodyOriTask.hpp"
+#include "legged_controllers/WBC/TaskSet/BodyOriTask.hpp"
 
 BodyOriTask::BodyOriTask(Robot* _model, EstimatorData* _estData) 
             : Task(3, "BodyOriTask"), model(_model), estData(_estData) {

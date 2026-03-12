@@ -1,4 +1,4 @@
-#include "legged_controllers/MPC.hpp"
+#include "legged_controllers/MPC/MPC.hpp"
 #include "legged_common/matTools.hpp"
 #include <fstream>
 #include <sstream>

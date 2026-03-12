@@ -20,8 +20,11 @@
    
     <node name="controller_loader" pkg="controller_manager" type="controller_manager"
           output="screen" args="load
-          controllers/legged_go2_squat_controller
-          controllers/legged_go2_tablet_controller"/>
+          controllers/go2_squat_controller
+          controllers/legged_go2_tablet_controller
+          controllers/go2_balance_controller
+          controllers/go2_mpc
+          controllers/go2_wbc"/>
 
 
 </launch>

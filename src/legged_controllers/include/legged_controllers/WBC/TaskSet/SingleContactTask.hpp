@@ -1,13 +1,12 @@
-#ifndef FOOT_POSITION_TASK_HPP
-#define FOOT_POSITION_TASK_HPP
+#ifndef SINGLE_CONTACT_TASK_HPP
+#define SINGLE_CONTACT_TASK_HPP
 
-#include "legged_controllers/TaskSet/Task.hpp"
+#include "legged_controllers/WBC/TaskSet/Task.hpp"
 
-
-class FootPosTask : public Task {
+class SingleContactTask : public Task {
     public:
-    FootPosTask(Robot* _model=nullptr, RobotStates* _lowStates=nullptr, EstimatorData* _estData=nullptr, int _legID=0);
-    ~FootPosTask();
+    SingleContactTask(Robot* _model=nullptr, RobotStates* _lowStates=nullptr, EstimatorData* _estData=nullptr, int _legID=0);
+    ~SingleContactTask();
 
     protected:
     virtual void calcTask(const Eigen::VectorXd& x_des, const Eigen::VectorXd& dx_des, 
@@ -18,7 +17,7 @@ class FootPosTask : public Task {
     Robot* model;
     RobotStates* lowStates;
     EstimatorData* estData;
-    
+
     int legID;
     Eigen::Matrix3d Jac;
     Eigen::Matrix3d rSkew;

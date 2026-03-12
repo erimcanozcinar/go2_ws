@@ -1,7 +1,7 @@
 #ifndef BODY_ORIENTATION_TASK_HPP
 #define BODY_ORIENTATION_TASK_HPP
 
-#include "legged_controllers/TaskSet/Task.hpp"
+#include "legged_controllers/WBC/TaskSet/Task.hpp"
 
 class BodyOriTask : public Task {
     public:

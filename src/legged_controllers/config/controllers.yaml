@@ -1,7 +1,13 @@
 controllers:
-  legged_go2_squat_controller:
-    type: legged/LeggedGo2SquatController
+  go2_squat_controller:
+    type: legged/Go2SquatController
   legged_go2_tablet_controller:
     type: legged/LeggedGo2TabletController
+  go2_balance_controller:
+    type: legged/Go2BalanceController
+  go2_mpc:
+    type: legged/Go2MPC
+  go2_wbc:
+    type: legged/Go2WBC
 
 
