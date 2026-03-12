@@ -1,0 +1,7 @@
+#ifndef PARAMETERS_HPP
+#define PARAMETERS_HPP
+
+
+#define initZc 0.0369 //0.53319176863337994221048177223565
+
+#endif

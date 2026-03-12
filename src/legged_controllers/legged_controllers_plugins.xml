@@ -1,0 +1,16 @@
+<library path="lib/liblegged_controllers">
+    <class name="legged/LeggedGo2SquatController" type="legged::LeggedGo2SquatController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            The basic legged squat controller for making the Unitree Go2 stand up and sit down.
+        </description>
+    </class>
+
+    <class name="legged/LeggedGo2TabletController" type="legged::LeggedGo2TabletController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            Tekir's controllers on implemented on Go2.
+        </description>
+    </class>
+
+</library>

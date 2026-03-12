@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <arg name="robot_type" default="go2"/>
+
+    <arg name="cheater" default="false"/>
+
+    <!-- make the files into global parameters -->
+    <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go2/go2.urdf"/>
+
+    <arg name="model" default="$(find legged_unitree_description)/urdf/go2/go2.urdf"/>
+    <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+    <param name="taskFile" value="$(find legged_controllers)/config/$(arg robot_type)/task.info"/>
+    <param name="referenceFile" value="$(find legged_controllers)/config/$(arg robot_type)/reference.info"/>
+    <param name="gaitCommandFile" value="$(find legged_controllers)/config/$(arg robot_type)/gait.info"/>
+
+    <rosparam file="$(find legged_controllers)/config/controllers.yaml" command="load"/>
+
+   
+    <node name="controller_loader" pkg="controller_manager" type="controller_manager"
+          output="screen" args="load
+          controllers/legged_go2_squat_controller
+          controllers/legged_go2_tablet_controller"/>
+
+
+</launch>

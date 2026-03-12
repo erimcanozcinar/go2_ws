@@ -1,0 +1,7 @@
+controllers:
+  legged_go2_squat_controller:
+    type: legged/LeggedGo2SquatController
+  legged_go2_tablet_controller:
+    type: legged/LeggedGo2TabletController
+
+
