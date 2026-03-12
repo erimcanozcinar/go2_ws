@@ -72,12 +72,6 @@ namespace legged
     Kp.setZero();
     Kd.setZero();
 
-    genCoor.resize(19);
-    genVel.resize(18);
-    genAcc.resize(18);
-    genCoor.setZero();
-    genVel.setZero();
-    genAcc.setZero();
     tauGravity.resize(18);
     tauInvDyn.resize(18);
     tauGravity.setZero();
@@ -162,21 +156,6 @@ namespace legged
     dqRef[1] = lowStates.dqJoint[1];
     dqRef[2] = lowStates.dqJoint[2];
     dqRef[3] = lowStates.dqJoint[3];
-
-    genCoor << 0, 0, 0, lowStates.imu.orientation, lowStates.qJoint[0], lowStates.qJoint[1], lowStates.qJoint[2], lowStates.qJoint[3];
-    genVel << 0, 0, 0, lowStates.imu.gyro, lowStates.dqJoint[0], lowStates.dqJoint[1], lowStates.dqJoint[2], lowStates.dqJoint[3];
-    genAcc << lowStates.imu.acc, 0, 0, 0, 0, 0, 0, 0;
-
-    std::cout << " Initial Joint Position: " << std::endl;
-    std::cout << qRef[0].transpose() << std::endl;
-    std::cout << qRef[1].transpose() << std::endl;
-    std::cout << qRef[2].transpose() << std::endl;
-    std::cout << qRef[3].transpose() << std::endl;
-    std::cout << " Initial Foot Position: " << std::endl;
-    std::cout << unitreeGo2->_RF.calcFootPos(lowStates.qJoint[0], FrameType::HIP).transpose() << std::endl;
-    std::cout << unitreeGo2->_LF.calcFootPos(lowStates.qJoint[1], FrameType::HIP).transpose() << std::endl;
-    std::cout << unitreeGo2->_RB.calcFootPos(lowStates.qJoint[2], FrameType::HIP).transpose() << std::endl;
-    std::cout << unitreeGo2->_LB.calcFootPos(lowStates.qJoint[3], FrameType::HIP).transpose() << std::endl;
     
     initial_time = ros::Time::now();
     params_last_published = ros::Time::now();
