@@ -1,7 +1,7 @@
 #ifndef KINEMATICS_HPP
 #define KINEMATICS_HPP
 
-#include "eigen3/Eigen/Dense"
+#include "Eigen/Dense"
 #include "legged_common/matTools.hpp"
 #include "legged_common/parameters.hpp"
 
@@ -23,6 +23,7 @@ class Leg
     Eigen::Vector3d calcFootPos(const Eigen::Vector3d& Q, FrameType frame);
     Eigen::Vector3d calcFootVel(const Eigen::Vector3d& Q, const Eigen::Vector3d& dQ);
     Eigen::Matrix3d calcLegJac(const Eigen::Vector3d& q);
+    Eigen::Matrix3d calcLegJacDot(const Eigen::Vector3d& q, const Eigen::Vector3d& dq);
     Eigen::Vector3d calcJointPos(const Eigen::Vector3d& pfoot);
     Eigen::Vector3d calcJointVel(const Eigen::Vector3d& vfoot, const Eigen::Vector3d& q);
 

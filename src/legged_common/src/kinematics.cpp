@@ -98,6 +98,38 @@ Eigen::Matrix3d Leg::calcLegJac(const Eigen::Vector3d& q) {
     return Jac;
 }
 
+Eigen::Matrix3d Leg::calcLegJacDot(const Eigen::Vector3d& q, const Eigen::Vector3d& dq) {
+    Eigen::Matrix3d signMat;
+    Eigen::Matrix3d dJac;
+    signMat << _xSign, 0, 0,
+               0, _ySign, 0,
+               0, 0, _ySign;
+    double q1 = q(0);
+    double q2 = q(1);
+    double q3 = q(2);
+    double dq1 = dq(0);
+    double dq2 = dq(1);
+    double dq3 = dq(2);
+
+    double L2 = _ySign*_abadLinkLength;
+    double L3 = -_thighLinkLength;
+    double Lf = -_calfLinkLength;
+
+    dJac(0,0) = 0.0;
+    dJac(0,1) = (- dq2*(Lf*sin(q2 + q3) + L3*sin(q2)) - Lf*dq3*sin(q2 + q3));
+    dJac(0,2) = (-Lf*sin(q2 + q3)*(dq2 + dq3));
+
+    dJac(1,0) = (dq2*(Lf*(cos(q1)*cos(q2)*sin(q3) + cos(q1)*cos(q3)*sin(q2)) + L3*cos(q1)*sin(q2)) - dq1*(Lf*(sin(q1)*sin(q2)*sin(q3) - cos(q2)*cos(q3)*sin(q1)) + L2*cos(q1) - L3*cos(q2)*sin(q1)) + Lf*dq3*(cos(q1)*cos(q2)*sin(q3) + cos(q1)*cos(q3)*sin(q2)));
+    dJac(1,1) = (dq2*sin(q1)*(Lf*cos(q2 + q3) + L3*cos(q2)) + dq1*cos(q1)*(Lf*sin(q2 + q3) + L3*sin(q2)) + Lf*dq3*cos(q2 + q3)*sin(q1));
+    dJac(1,2) = (Lf*dq1*sin(q2 + q3)*cos(q1) + Lf*dq2*cos(q2 + q3)*sin(q1) + Lf*dq3*cos(q2 + q3)*sin(q1));
+
+    dJac(2,0) = (dq2*sin(q1)*(Lf*sin(q2 + q3) + L3*sin(q2)) - dq1*(L2*sin(q1) + L3*cos(q1)*cos(q2) + Lf*cos(q1)*cos(q2)*cos(q3) - Lf*cos(q1)*sin(q2)*sin(q3)) + Lf*dq3*sin(q2 + q3)*sin(q1));
+    dJac(2,1) = (dq1*sin(q1)*(Lf*sin(q2 + q3) + L3*sin(q2)) - dq2*cos(q1)*(Lf*cos(q2 + q3) + L3*cos(q2)) - Lf*dq3*cos(q2 + q3)*cos(q1));
+    dJac(2,2) = (Lf*dq1*sin(q2 + q3)*sin(q1) - Lf*dq3*cos(q2 + q3)*cos(q1) - Lf*dq2*cos(q2 + q3)*cos(q1));
+
+    return dJac;
+}
+
 Eigen::Vector3d Leg::calcJointPos(const Eigen::Vector3d& pfoot){ 
     double L2 = _ySign*_abadLinkLength;
     double L3 = -_thighLinkLength;
