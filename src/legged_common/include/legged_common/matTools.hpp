@@ -1,7 +1,7 @@
 #ifndef MATTOOLS_HPP
 #define MATTOOLS_HPP
 
-#include "eigen3/Eigen/Dense"
+#include <Eigen/Dense>
 #include <iostream>
 #include <cmath>
 
@@ -20,5 +20,6 @@ double numIntegral(double In, double prevIn, double prevOut, double dt);
 double Numdiff(double currX, double prevX, double dt);
 double LPF(double Input, double prevOut, double freq, double dt);
 void pseudoInverse(const Eigen::MatrixXd& A, double threshold, Eigen::MatrixXd& Ainv);
+void weightedPseudoInverse(const Eigen::MatrixXd& A, const Eigen::MatrixXd& Winv, Eigen::MatrixXd& Ainv, double threshold = 0.0001);
 
 #endif

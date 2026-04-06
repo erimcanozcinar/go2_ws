@@ -215,3 +215,10 @@ void pseudoInverse(const Eigen::MatrixXd& A, double threshold, Eigen::MatrixXd& 
   Ainv = svd.matrixV() * invS.asDiagonal() * svd.matrixU().transpose();
 }
 
+void weightedPseudoInverse(const Eigen::MatrixXd& A, const Eigen::MatrixXd& Winv, Eigen::MatrixXd& Ainv, double threshold) {
+  Eigen::MatrixXd lambda(A*Winv*A.transpose());
+  Eigen::MatrixXd lambda_inv;
+  pseudoInverse(lambda, threshold, lambda_inv);
+  Ainv = Winv*A.transpose()*lambda_inv;
+}
+
