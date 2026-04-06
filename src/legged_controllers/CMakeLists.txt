@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(catkin REQUIRED
         COMPONENTS
         roscpp
+        third_party
         legged_common
         #legged_interface
         #legged_wbc
@@ -81,9 +82,11 @@ add_library(${PROJECT_NAME}
         src/Go2BalanceController.cpp
         src/Go2MPC.cpp
         src/Go2WBC.cpp
+        src/Go2WBIC.cpp
         src/BalanceController/BalanceController.cpp
         src/MPC/MPC.cpp
         src/WBC/WBC.cpp
+        src/WBC/WBIC.cpp
         src/WBC/TaskSet/BodyOriTask.cpp
         src/WBC/TaskSet/BodyPosTask.cpp
         src/WBC/TaskSet/FootPosTask.cpp

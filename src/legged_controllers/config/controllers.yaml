@@ -9,5 +9,7 @@ controllers:
     type: legged/Go2MPC
   go2_wbc:
     type: legged/Go2WBC
+  go2_wbic:
+    type: legged/Go2WBIC
 
 

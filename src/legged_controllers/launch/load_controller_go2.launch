@@ -24,7 +24,8 @@
           controllers/legged_go2_tablet_controller
           controllers/go2_balance_controller
           controllers/go2_mpc
-          controllers/go2_wbc"/>
+          controllers/go2_wbc
+          controllers/go2_wbic"/>
 
 
 </launch>

@@ -34,4 +34,11 @@
         </description>
     </class>
 
+    <class name="legged/Go2WBIC" type="legged::Go2WBIC"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            WBIC controller for unitree Go2 robot.
+        </description>
+    </class>
+
 </library>
