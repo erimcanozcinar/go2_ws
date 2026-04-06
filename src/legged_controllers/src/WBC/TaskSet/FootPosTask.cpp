@@ -3,9 +3,12 @@
 FootPosTask::FootPosTask(Robot* _model, RobotStates* _lowStates, EstimatorData* _estData, int _legID) 
             : Task(3, "FootPosTask"), model(_model), lowStates(_lowStates), estData(_estData), legID(_legID) {
     TK::Jt = Eigen::MatrixXd::Zero(TK::taskDim, TK::dof);
+    TK::dJt = Eigen::MatrixXd::Zero(TK::taskDim, TK::dof);
     TK::error = Eigen::VectorXd::Zero(TK::taskDim);
     TK::desVel = Eigen::VectorXd::Zero(TK::taskDim);
+    TK::ddx_cmd = Eigen::VectorXd::Zero(TK::taskDim);
     Jac.setZero();
+    dJac.setZero();
 }
 
 FootPosTask::~FootPosTask() {
@@ -15,6 +18,8 @@ void FootPosTask::calcTask(const Eigen::VectorXd& x_des, const Eigen::VectorXd& 
     const Eigen::VectorXd& ddx_des) {
         TK::error = (x_des-estData->pos) - (estData->rBody2World*estData->pFootBody[legID]);
         TK::desVel = dx_des;
+
+        TK::ddx_cmd = ddx_des + 100*TK::error + 10*(TK::desVel - estData->rBody2World*estData->vFootBody[legID]);
 }
 
 void FootPosTask::calcTaskJacobian() {
@@ -31,4 +36,17 @@ void FootPosTask::calcTaskJacobian() {
         TK::Jt.block(0,3,3,3) = Eigen::Matrix3d::Identity();     
         // Foot position part: In world frame
         TK::Jt.block(0,6+3*legID,3,3) = estData->rBody2World*Jac;
+}
+
+void FootPosTask::calcTaskJacobianDot() {
+        if(legID == 0) dJac = model->_RF.calcLegJacDot(lowStates->qJoint[0], lowStates->dqJoint[0]);
+        else if(legID == 1) dJac = model->_LF.calcLegJacDot(lowStates->qJoint[1], lowStates->dqJoint[1]);
+        else if(legID == 2) dJac = model->_RB.calcLegJacDot(lowStates->qJoint[2], lowStates->dqJoint[2]);
+        else if(legID == 3) dJac = model->_LB.calcLegJacDot(lowStates->qJoint[3], lowStates->dqJoint[3]);
+        else throw std::invalid_argument("Invalid leg ID");
+
+        vSkew = vec2SkewSym(estData->vFootBody[legID]);
+        TK::dJt.block(0,0,3,3) = -estData->rBody2World*vSkew;
+        TK::dJt.block(0,3,3,3) = Eigen::Matrix3d::Zero();
+        TK::dJt.block(0,6+3*legID,3,3) = estData->rBody2World*dJac;
 }

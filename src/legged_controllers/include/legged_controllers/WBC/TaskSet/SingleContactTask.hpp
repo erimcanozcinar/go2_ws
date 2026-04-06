@@ -5,13 +5,14 @@
 
 class SingleContactTask : public Task {
     public:
-    SingleContactTask(Robot* _model=nullptr, RobotStates* _lowStates=nullptr, EstimatorData* _estData=nullptr, int _legID=0);
+    SingleContactTask(Robot* _model, RobotStates* _lowStates, EstimatorData* _estData, int _legID);
     ~SingleContactTask();
 
     protected:
     virtual void calcTask(const Eigen::VectorXd& x_des, const Eigen::VectorXd& dx_des, 
         const Eigen::VectorXd& ddx_des);
     virtual void calcTaskJacobian();
+    virtual void calcTaskJacobianDot();
 
     private:
     Robot* model;
@@ -19,8 +20,8 @@ class SingleContactTask : public Task {
     EstimatorData* estData;
 
     int legID;
-    Eigen::Matrix3d Jac;
-    Eigen::Matrix3d rSkew;
+    Eigen::Matrix3d Jac, dJac;
+    Eigen::Matrix3d rSkew, vSkew;
 };
 
 #endif
