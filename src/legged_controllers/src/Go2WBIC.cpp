@@ -184,14 +184,14 @@ namespace legged
 
 
     /* #region: FORCE DISTRIBUTION*/
-    // balanceController->setDesiredStates(traj->getDesiredStates());
-    // balanceController->run();
+    balanceController->setDesiredStates(traj->getDesiredStates());
+    balanceController->run();
 
-    mpc->setDesiredStates(traj->getDesiredStates());
-    mpc->run(traj->gait);
+    // mpc->setDesiredStates(traj->getDesiredStates());
+    // mpc->run(traj->gait);
 
     wbic->setDesiredStates(traj->getDesiredStates());
-    wbic->run(mpc->getFootForcesInWorldFrame());
+    wbic->run(balanceController->getFootForcesInWorldFrame());
     qRef[0] = wbic->getJointPosCmd().block<3,1>(0,0);
     qRef[1] = wbic->getJointPosCmd().block<3,1>(3,0);
     qRef[2] = wbic->getJointPosCmd().block<3,1>(6,0);
@@ -243,7 +243,7 @@ namespace legged
       if(dampingMode) {
         joints_[i].setCommand(0, 0, 0, 2, 0);
       } else {
-        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 0, 2, Tau_go2(i));
+        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 3, 0.3, Tau_go2(i));
       }
     }
 
