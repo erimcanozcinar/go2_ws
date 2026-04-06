@@ -21,7 +21,7 @@ static const double POSITIVE_NUMBER = 1000000.0;
 
 class BalanceController {
     public:
-    std::array<Eigen::Vector3d, 4> footForce;
+    std::array<Eigen::Vector3d, 4> footForce, footForceWorld;
 
     BalanceController(EstimatorData* _estData = nullptr);
     ~BalanceController();
@@ -30,6 +30,7 @@ class BalanceController {
     void setDesiredStates(DesiredStates* _desStates);
     void setActualStates();
     const std::array<Eigen::Vector3d, 4>& getFootForces() const { return footForce; }
+    const std::array<Eigen::Vector3d, 4>& getFootForcesInWorldFrame() const { return footForceWorld; }
     
     private:
     EstimatorData* _est;

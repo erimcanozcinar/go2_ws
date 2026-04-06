@@ -16,7 +16,7 @@ class ModelPredictiveControl {
     qpOASES::SQProblem* mpcProblem;
 	qpOASES::Options op;  
     
-    std::array<Eigen::Vector3d, 4> footForce;
+    std::array<Eigen::Vector3d, 4> footForce, footForceWorld;
     std::array<Eigen::Vector3d, 4> pCom2Foot;
 
     Eigen::Vector3d gravityDirectionVector;
@@ -61,6 +61,7 @@ class ModelPredictiveControl {
     ModelPredictiveControl(EstimatorData* _estData = nullptr, double _dt = 0.001, int _iterBetweenMPC = 25);
     void run(const Gait* _gait);
     const std::array<Eigen::Vector3d, 4>& getFootForces() const { return footForce; }
+    const std::array<Eigen::Vector3d, 4>& getFootForcesInWorldFrame() const { return footForceWorld; }
     void discreteModel(double yaw);
     void qpForm(double yaw);
     void matrix_to_real(qpOASES::real_t* outM, Eigen::MatrixXd inM);

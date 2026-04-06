@@ -74,6 +74,7 @@ void BalanceController::run() {
     
     for (int i = 0; i < NUM_CONTACT_POINTS; i++) {
         footForce[i] = -rBody.transpose()*F.segment(3 * i, 3);
+        footForceWorld[i] = F.segment(3 * i, 3);
     }
 
 }

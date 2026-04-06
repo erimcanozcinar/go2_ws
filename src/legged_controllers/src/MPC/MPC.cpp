@@ -397,6 +397,7 @@ void ModelPredictiveControl::run(const Gait* _gait){
     // The negative sign accounts for the fact that forces act on the ground, not the robot
     for (int i = 0; i < 4; i++) {
         footForce[i] = -_est->rWorld2Body*optF.segment(3 * i, 3);
+        footForceWorld[i] = optF.segment(3 * i, 3);
     }
     iterCount++;
 }
