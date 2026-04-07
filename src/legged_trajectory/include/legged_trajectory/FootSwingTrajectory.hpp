@@ -22,5 +22,25 @@ class FootSwingTrajectory {
         double getTime() const { return t; }
 };
 
+class CycloidSwingTrajectory {
+    private:
+        Eigen::Vector3d Pf, Vf, Af;
+        Eigen::Vector3d trajX, trajY, trajZ;
+        double t, tSwing;
+
+        double cycloidXYPos(double pStart, double pEnd, double phase);
+        double cycloidXYVel(double pStart, double pEnd, double phase);
+        double cycloidZPos(double pStart, double h, double phase);
+        double cycloidZVel(double h, double phase);
+
+    public:
+        CycloidSwingTrajectory(){};
+        void footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh);
+        Eigen::Vector3d getFootPos() const { return Pf; }
+        Eigen::Vector3d getFootVel() const { return Vf; }
+        Eigen::Vector3d getFootAcc() const { return Af; }
+        void setSwingTime(double tSw) { tSwing = tSw; }
+        double getTime() const { return t; }
+};
 
 #endif

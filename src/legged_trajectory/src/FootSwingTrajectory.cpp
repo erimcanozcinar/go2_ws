@@ -85,3 +85,36 @@ Eigen::Vector3d FootSwingTrajectory::FuncPoly6th(double RealTime, double t_start
     trajOut << Pos, Vel, Acc;
     return trajOut;
 }
+
+
+double CycloidSwingTrajectory::cycloidXYPos(double pStart, double pEnd, double phase) {
+    double phasePI = 2 * M_PI * phase;
+    return (pEnd - pStart)*(phasePI - sin(phasePI))/(2*M_PI) + pStart;
+}
+
+double CycloidSwingTrajectory::cycloidXYVel(double pStart, double pEnd, double phase) {
+    double phasePI = 2 * M_PI * phase;
+    return (pEnd - pStart)*(1 - cos(phasePI)) / tSwing;
+}
+
+double CycloidSwingTrajectory::cycloidZPos(double pStart, double h, double phase) {
+    double phasePI = 2 * M_PI * phase;
+    return h*(1 - cos(phasePI))/2 + pStart;
+}
+
+double CycloidSwingTrajectory::cycloidZVel(double h, double phase) {
+    double phasePI = 2 * M_PI * phase;
+    return h*M_PI * sin(phasePI) / tSwing;
+}
+
+void CycloidSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {
+    double pX = cycloidXYPos(p0(0), pf(0), phaseSwg);
+    double pY = cycloidXYPos(p0(1), pf(1), phaseSwg);
+    double pZ = cycloidZPos(0, Fh, phaseSwg);
+    double vX = cycloidXYVel(p0(0), pf(0), phaseSwg);
+    double vY = cycloidXYVel(p0(1), pf(1), phaseSwg);
+    double vZ = cycloidZVel(Fh, phaseSwg);
+    Pf << pX, pY, pZ;
+    Vf << vX, vY, vZ;
+    Af << 0, 0, 0;
+}
