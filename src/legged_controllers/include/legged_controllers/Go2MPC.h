@@ -30,7 +30,7 @@
 
 #include "legged_trajectory/Trajectory.hpp"
 #include "legged_estimator/StateEstimator.hpp"
-#include "legged_controllers/MPC/MPC.hpp"
+#include "legged_controllers/MPC/AsyncMPC.hpp"
 #include "rbdyn/RigidBodyModel.hpp"
 
 #include <cassert>
@@ -82,7 +82,7 @@ private:
     Robot* unitreeGo2 = nullptr;
     Trajectory* traj = nullptr;    
     Estimator* estimator = nullptr;
-    ModelPredictiveControl* mpc = nullptr;
+    AsyncMPC* asyncMPC = nullptr;
 
     Eigen::Matrix3d kpCartesian, kdCartesian;
     Eigen::Matrix3d kpJoint[4], kdJoint[4];

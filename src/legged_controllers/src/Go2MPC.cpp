@@ -22,7 +22,7 @@ namespace legged
     delete unitreeGo2;
     delete traj;
     delete estimator;
-    delete mpc;
+    delete asyncMPC;
   }//sub_command_.shutdown(); }
 
   bool Go2MPC::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &n)
@@ -33,7 +33,8 @@ namespace legged
     unitreeGo2 = new Robot();
     traj = new Trajectory(0.002);
     estimator = new Estimator(unitreeGo2, 0.002);
-    mpc = new ModelPredictiveControl(&estResult, 0.002, 25);
+    asyncMPC = new AsyncMPC(0.002, 25);
+    asyncMPC->start();
     
     lowStates.imu.acc.setZero();
     lowStates.imu.gyro.setZero();
@@ -202,15 +203,15 @@ namespace legged
     /* #endregion */
 
     /* #region: FORCE DISTRIBUTION*/
-    mpc->setDesiredStates(traj->getDesiredStates());
-    mpc->run(traj->gait);
+    asyncMPC->updateMPCState(*(traj->getDesiredStates()), estResult, traj->gait);
+    std::array<Eigen::Vector3d, 4> mpc_forces = asyncMPC->getLatestFootForces();
     /* #endregion */
 
     /* #region: GROUND REACTION FORCE AND FOOT IMPEDANCE */
-    footForce[0] = mpc->getFootForces()[0] + (1-traj->conState[0])*kpCartesian*(traj->pFoot[0] - estResult.pFoot[0]) + kdCartesian*(traj->vFoot[0]-estResult.vFoot[0]);
-    footForce[1] = mpc->getFootForces()[1] + (1-traj->conState[1])*kpCartesian*(traj->pFoot[1] - estResult.pFoot[1]) + kdCartesian*(traj->vFoot[1]-estResult.vFoot[1]);
-    footForce[2] = mpc->getFootForces()[2] + (1-traj->conState[2])*kpCartesian*(traj->pFoot[2] - estResult.pFoot[2]) + kdCartesian*(traj->vFoot[2]-estResult.vFoot[2]);
-    footForce[3] = mpc->getFootForces()[3] + (1-traj->conState[3])*kpCartesian*(traj->pFoot[3] - estResult.pFoot[3]) + kdCartesian*(traj->vFoot[3]-estResult.vFoot[3]);
+    footForce[0] = mpc_forces[0] + (1-traj->conState[0])*kpCartesian*(traj->pFoot[0] - estResult.pFoot[0]) + kdCartesian*(traj->vFoot[0]-estResult.vFoot[0]);
+    footForce[1] = mpc_forces[1] + (1-traj->conState[1])*kpCartesian*(traj->pFoot[1] - estResult.pFoot[1]) + kdCartesian*(traj->vFoot[1]-estResult.vFoot[1]);
+    footForce[2] = mpc_forces[2] + (1-traj->conState[2])*kpCartesian*(traj->pFoot[2] - estResult.pFoot[2]) + kdCartesian*(traj->vFoot[2]-estResult.vFoot[2]);
+    footForce[3] = mpc_forces[3] + (1-traj->conState[3])*kpCartesian*(traj->pFoot[3] - estResult.pFoot[3]) + kdCartesian*(traj->vFoot[3]-estResult.vFoot[3]);
     Tau_ff[0] = unitreeGo2->_RF.calcLegJac(lowStates.qJoint[0]).transpose()*footForce[0];
     Tau_ff[1] = unitreeGo2->_LF.calcLegJac(lowStates.qJoint[1]).transpose()*footForce[1];
     Tau_ff[2] = unitreeGo2->_RB.calcLegJac(lowStates.qJoint[2]).transpose()*footForce[2];

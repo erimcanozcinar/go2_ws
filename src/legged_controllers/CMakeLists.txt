@@ -83,8 +83,10 @@ add_library(${PROJECT_NAME}
         src/Go2MPC.cpp
         src/Go2WBC.cpp
         src/Go2WBIC.cpp
+        src/BalanceController/VMC.cpp
         src/BalanceController/BalanceController.cpp
         src/MPC/MPC.cpp
+        src/MPC/AsyncMPC.cpp
         src/WBC/WBC.cpp
         src/WBC/WBIC.cpp
         src/WBC/TaskSet/BodyOriTask.cpp
