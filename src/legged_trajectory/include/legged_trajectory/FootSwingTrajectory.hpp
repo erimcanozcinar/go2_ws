@@ -3,7 +3,7 @@
 
 #include <eigen3/Eigen/Dense>
 
-class FootSwingTrajectory {
+class PolynomialSwingTrajectory {
     private:
         Eigen::Vector3d Pf, Vf, Af;
         Eigen::Vector3d trajX, trajY, trajZ;
@@ -13,7 +13,7 @@ class FootSwingTrajectory {
         Eigen::Vector3d FuncPoly6th(double RealTime, double t_start, double t_end, double Z0, double dZ0, double ddZ0, double Ze, double dZe, double ddZe, double Fh);
 
     public:
-        FootSwingTrajectory(){};
+        PolynomialSwingTrajectory(){};
         void footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh);
         Eigen::Vector3d getFootPos() const { return Pf; }
         Eigen::Vector3d getFootVel() const { return Vf; }

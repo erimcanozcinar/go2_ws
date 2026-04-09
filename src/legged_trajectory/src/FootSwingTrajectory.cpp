@@ -1,7 +1,6 @@
 #include "legged_trajectory/FootSwingTrajectory.hpp"
 
-void FootSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh)
-{    
+void PolynomialSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {    
     t = phaseSwg*tSwing;
 
     trajX = FuncPoly5th(t, 0, tSwing, p0(0), 0, 0, pf(0), 0, 0);
@@ -13,8 +12,7 @@ void FootSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, E
     Af << trajX(2), trajY(2), trajZ(2);
 }
 
-Eigen::Vector3d FootSwingTrajectory::FuncPoly5th(double RealTime, double t_start, double t_end, double Z0, double dZ0, double ddZ0, double Ze, double dZe, double ddZe)
-{
+Eigen::Vector3d PolynomialSwingTrajectory::FuncPoly5th(double RealTime, double t_start, double t_end, double Z0, double dZ0, double ddZ0, double Ze, double dZe, double ddZe) {
     double tw = t_end - t_start;
     double Rt = RealTime - t_start;
     double Pos, Vel, Acc;
@@ -49,8 +47,7 @@ Eigen::Vector3d FootSwingTrajectory::FuncPoly5th(double RealTime, double t_start
     return trajOut;
 }
 
-Eigen::Vector3d FootSwingTrajectory::FuncPoly6th(double RealTime, double t_start, double t_end, double Z0, double dZ0, double ddZ0, double Ze, double dZe, double ddZe, double Fh)
-{
+Eigen::Vector3d PolynomialSwingTrajectory::FuncPoly6th(double RealTime, double t_start, double t_end, double Z0, double dZ0, double ddZ0, double Ze, double dZe, double ddZe, double Fh) {
     double tw = t_end - t_start;
     double Rt = RealTime - t_start;
     double Pos, Vel, Acc;
@@ -87,6 +84,18 @@ Eigen::Vector3d FootSwingTrajectory::FuncPoly6th(double RealTime, double t_start
 }
 
 // Cycloid Swing Trajectory
+void CycloidSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {
+    double pX = cycloidXYPos(p0(0), pf(0), phaseSwg);
+    double pY = cycloidXYPos(p0(1), pf(1), phaseSwg);
+    double pZ = cycloidZPos(0, Fh, phaseSwg);
+    double vX = cycloidXYVel(p0(0), pf(0), phaseSwg);
+    double vY = cycloidXYVel(p0(1), pf(1), phaseSwg);
+    double vZ = cycloidZVel(Fh, phaseSwg);
+    Pf << pX, pY, pZ;
+    Vf << vX, vY, vZ;
+    Af << 0, 0, 0;
+}
+
 double CycloidSwingTrajectory::cycloidXYPos(double pStart, double pEnd, double phase) {
     double phasePI = 2 * M_PI * phase;
     return (pEnd - pStart)*(phasePI - sin(phasePI))/(2*M_PI) + pStart;
@@ -107,37 +116,7 @@ double CycloidSwingTrajectory::cycloidZVel(double h, double phase) {
     return h*M_PI * sin(phasePI) / tSwing;
 }
 
-void CycloidSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {
-    double pX = cycloidXYPos(p0(0), pf(0), phaseSwg);
-    double pY = cycloidXYPos(p0(1), pf(1), phaseSwg);
-    double pZ = cycloidZPos(0, Fh, phaseSwg);
-    double vX = cycloidXYVel(p0(0), pf(0), phaseSwg);
-    double vY = cycloidXYVel(p0(1), pf(1), phaseSwg);
-    double vZ = cycloidZVel(Fh, phaseSwg);
-    Pf << pX, pY, pZ;
-    Vf << vX, vY, vZ;
-    Af << 0, 0, 0;
-}
-
 // Bezier Swing Trajectory
-double BezierSwingTrajectory::cubicBezier(double pStart, double pEnd, double phase) {
-    double pDiff = pEnd - pStart;
-    double bezier = pow(phase,3) + 3*(pow(phase,2)*(1-phase));
-    return pStart + pDiff*bezier;
-}
-
-double BezierSwingTrajectory::cubicBezierFirstDerivative(double pStart, double pEnd, double phase, double tSwing) {
-    double pDiff = pEnd - pStart;
-    double bezier = 6*phase*(1-phase);
-    return 2*pDiff*bezier/tSwing;
-}
-
-double BezierSwingTrajectory::cubicBezierSecondDerivative(double pStart, double pEnd, double phase, double tSwing) {
-    double pDiff = pEnd - pStart;
-    double bezier = 6 - 12*phase;
-    return 4*pDiff*bezier/pow(tSwing, 2);
-}
-
 void BezierSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {
     double pX = cubicBezier(p0(0), pf(0), phaseSwg);
     double pY = cubicBezier(p0(1), pf(1), phaseSwg);
@@ -160,5 +139,23 @@ void BezierSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0,
     Pf << pX, pY, pZ;
     Vf << vX, vY, vZ;
     Af << aX, aY, aZ;
+}
+
+double BezierSwingTrajectory::cubicBezier(double pStart, double pEnd, double phase) {
+    double pDiff = pEnd - pStart;
+    double bezier = pow(phase,3) + 3*(pow(phase,2)*(1-phase));
+    return pStart + pDiff*bezier;
+}
+
+double BezierSwingTrajectory::cubicBezierFirstDerivative(double pStart, double pEnd, double phase, double tSwing) {
+    double pDiff = pEnd - pStart;
+    double bezier = 6*phase*(1-phase);
+    return 2*pDiff*bezier/tSwing;
+}
+
+double BezierSwingTrajectory::cubicBezierSecondDerivative(double pStart, double pEnd, double phase, double tSwing) {
+    double pDiff = pEnd - pStart;
+    double bezier = 6 - 12*phase;
+    return 4*pDiff*bezier/pow(tSwing, 2);
 }
 

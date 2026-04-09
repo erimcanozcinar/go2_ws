@@ -15,7 +15,7 @@ class Trajectory : public Robot {
     double dT;   
 
     ComTrajectory comTraj;
-    std::array<FootSwingTrajectory, 4> footSwingTraj;
+    std::array<PolynomialSwingTrajectory, 4> footSwingTraj;
 
     
     std::array<Eigen::Vector3d, 4> p0, pf;
