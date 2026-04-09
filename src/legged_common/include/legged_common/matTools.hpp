@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cmath>
 
+bool areDoubleSame(double a, double b);
+
 Eigen::Matrix3d quaternionToRotationMatrix( const Eigen::Vector4d& q);
 Eigen::Vector3d quaternionToso3(const Eigen::Vector4d& quat);
 Eigen::Vector3d quatToRPY(const Eigen::Vector4d& q);

@@ -1,5 +1,9 @@
 #include "legged_common/matTools.hpp"
 
+bool areDoubleSame(double a, double b){
+  return fabs(a - b) < 1e-6;
+}
+
 // Calculates world-to-body rotation matrix from quaternion.
 Eigen::Matrix3d quaternionToRotationMatrix( const Eigen::Vector4d& q) {
 
