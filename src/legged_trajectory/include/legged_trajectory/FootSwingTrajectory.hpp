@@ -43,4 +43,24 @@ class CycloidSwingTrajectory {
         double getTime() const { return t; }
 };
 
+class BezierSwingTrajectory {
+    private:
+        Eigen::Vector3d Pf, Vf, Af;
+        Eigen::Vector3d trajX, trajY, trajZ;
+        double t, tSwing;
+
+        double cubicBezier(double pStart, double pEnd, double phase);
+        double cubicBezierFirstDerivative(double pStart, double pEnd, double phase, double tSwing);
+        double cubicBezierSecondDerivative(double pStart, double h, double phase, double tSwing);
+
+    public:
+        BezierSwingTrajectory(){};
+        void footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh);
+        Eigen::Vector3d getFootPos() const { return Pf; }
+        Eigen::Vector3d getFootVel() const { return Vf; }
+        Eigen::Vector3d getFootAcc() const { return Af; }
+        void setSwingTime(double tSw) { tSwing = tSw; }
+        double getTime() const { return t; }
+};
+
 #endif

@@ -86,7 +86,7 @@ Eigen::Vector3d FootSwingTrajectory::FuncPoly6th(double RealTime, double t_start
     return trajOut;
 }
 
-
+// Cycloid Swing Trajectory
 double CycloidSwingTrajectory::cycloidXYPos(double pStart, double pEnd, double phase) {
     double phasePI = 2 * M_PI * phase;
     return (pEnd - pStart)*(phasePI - sin(phasePI))/(2*M_PI) + pStart;
@@ -118,3 +118,47 @@ void CycloidSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0
     Vf << vX, vY, vZ;
     Af << 0, 0, 0;
 }
+
+// Bezier Swing Trajectory
+double BezierSwingTrajectory::cubicBezier(double pStart, double pEnd, double phase) {
+    double pDiff = pEnd - pStart;
+    double bezier = pow(phase,3) + 3*(pow(phase,2)*(1-phase));
+    return pStart + pDiff*bezier;
+}
+
+double BezierSwingTrajectory::cubicBezierFirstDerivative(double pStart, double pEnd, double phase, double tSwing) {
+    double pDiff = pEnd - pStart;
+    double bezier = 6*phase*(1-phase);
+    return 2*pDiff*bezier/tSwing;
+}
+
+double BezierSwingTrajectory::cubicBezierSecondDerivative(double pStart, double pEnd, double phase, double tSwing) {
+    double pDiff = pEnd - pStart;
+    double bezier = 6 - 12*phase;
+    return 4*pDiff*bezier/pow(tSwing, 2);
+}
+
+void BezierSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0, Eigen::Vector3d pf, double Fh) {
+    double pX = cubicBezier(p0(0), pf(0), phaseSwg);
+    double pY = cubicBezier(p0(1), pf(1), phaseSwg);
+    double vX = cubicBezierFirstDerivative(p0(0), pf(0), phaseSwg, tSwing);
+    double vY = cubicBezierFirstDerivative(p0(1), pf(1), phaseSwg, tSwing);
+    double aX = cubicBezierSecondDerivative(p0(0), pf(0), phaseSwg, tSwing);
+    double aY = cubicBezierSecondDerivative(p0(1), pf(1), phaseSwg, tSwing);
+
+    double pZ, vZ, aZ;
+    if(phaseSwg < 0.5) {
+        pZ = cubicBezier(0, Fh, phaseSwg*2);
+        vZ = cubicBezierFirstDerivative(0, Fh, phaseSwg*2, tSwing);
+        aZ = cubicBezierSecondDerivative(0, Fh, phaseSwg*2, tSwing);
+    } else {
+        pZ = cubicBezier(Fh, 0, phaseSwg*2-1);
+        vZ = cubicBezierFirstDerivative(Fh, 0, phaseSwg*2-1, tSwing);
+        aZ = cubicBezierSecondDerivative(Fh, 0, phaseSwg*2-1, tSwing);
+    }
+
+    Pf << pX, pY, pZ;
+    Vf << vX, vY, vZ;
+    Af << aX, aY, aZ;
+}
+
