@@ -22,6 +22,7 @@ class GamePad {
         double decreaseHeight = 0.0, increaseHeight = 0.0;
 
         bool standUp = false;
+        int selectedGait = 1;
 
         SDL_Event event;
         SDL_GameController* controller = nullptr;
@@ -32,6 +33,7 @@ class GamePad {
         double joyCmd[22] = {0.0, 0.0, 0.0, 0.0, 0.0, initZc, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         bool close = false;
         bool walkEnable = false;
+        int gait = 0;
         bool latsag_corr = false;
 
         ~GamePad(){

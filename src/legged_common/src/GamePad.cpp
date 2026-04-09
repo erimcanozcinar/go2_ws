@@ -166,8 +166,20 @@ void GamePad::gamepad() {
                     break;
                     
                 case SDL_CONTROLLER_BUTTON_START: // OPTIONS butonu (Allegro: case 9)
-                    walkEnable = !walkEnable;
+                    walkEnable = !walkEnable;                    
                     std::cout << (walkEnable ? "Walking mode enabled!" : "Walking mode disabled!") << std::endl;
+                    break;
+
+                case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    selectedGait = selectedGait - 1;                    
+                    if(selectedGait < 1) selectedGait = 3;
+                    std::cout << "Gait set to: " << selectedGait << std::endl;
+                    break;
+
+                case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    selectedGait = selectedGait + 1;
+                    if(selectedGait > 3) selectedGait = 1;
+                    std::cout << "Gait set to: " << selectedGait << std::endl;
                     break;
                     
                 // D-Pad Hız Kontrolü (Allegro'da AXIS olarak işlenmişti, SDL'de BUTTON olarak)
@@ -212,6 +224,8 @@ void GamePad::gamepad() {
             // Diğer olayları yönet
             break;
     }
+    if(walkEnable) gait = selectedGait;
+    else gait = 0;
 }
 
 void GamePad::callGamePad() {

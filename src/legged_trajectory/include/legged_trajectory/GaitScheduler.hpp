@@ -2,6 +2,7 @@
 #define GAITSCHEDULER_HPP
 
 #include <array>
+#include <cmath>
 
 class GaitScheduler {
 public:
@@ -50,12 +51,21 @@ private:
     bool liftOff;
 };
 
+enum GaitType {
+    STAND,
+    TROT_WALK,
+    TROT,
+    TROT_RUN
+};
+
 class Gait {
 public:
     Gait(double dt_=0.001);
     void run();
     void switchGait(int newGait);
 
+    GaitType getGaitType() const { return gaitType; }
+    std::string getGaitName() const { return gaitName; }
     double getGaitPeriod() const { return _gaitPeriod; }
     double getSwitchingPhase() const { return _switchingPhase; }
     double getSwingPeriod() const { return _swingPeriod; }
@@ -69,13 +79,20 @@ public:
     double getTimeStanceRemaining(int leg) const { return (*currentGait)[leg].getTimeStanceRemaining(); }
     bool getTouchDown(int leg) const { return (*currentGait)[leg].getTouchDown(); }
     bool getLiftOff(int leg) const { return (*currentGait)[leg].getLiftOff(); }
+    bool canGaitChange = true;
 
 private:
+    GaitType gaitType;
+    std::string gaitName;
     double dt, _gaitPeriod, _switchingPhase;
     double _stancePeriod, _swingPeriod;
-    bool canGaitChange = true;
+    int nextGait = 0;
     std::array<GaitScheduler, 4> stand, trotWalk, trot, trotRun;
     std::array<GaitScheduler, 4>* currentGait;
+
+    bool areDoubleSame(double a, double b) {
+        return fabs(a - b) < 1e-6;
+    }
 };
 
 #endif 

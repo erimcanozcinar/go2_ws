@@ -71,7 +71,7 @@ Gait::Gait(double dt_)
                 GaitScheduler(0.5, 0.4, 0.5, 0.0, dt),
                 GaitScheduler(0.5, 0.4, 0.0, 0.0, dt)};
     
-    currentGait = &trotWalk;
+    currentGait = &stand;
 }
 
 void Gait::run() {
@@ -83,17 +83,33 @@ void Gait::run() {
     _switchingPhase = (*currentGait)[0].getSwitchingPhase();
     _stancePeriod = (*currentGait)[0].getStancePeriod();
     _swingPeriod = (*currentGait)[0].getSwingPeriod();
+    canGaitChange = areDoubleSame((*currentGait)[0].getPhase(), 0.5) ||areDoubleSame((*currentGait)[1].getPhase(), 0.5) ||areDoubleSame((*currentGait)[2].getPhase(), 0.5) ||areDoubleSame((*currentGait)[3].getPhase(), 0.5);
 }
 
 void Gait::switchGait(int newGait) {
-    switch(newGait) {
+    if(canGaitChange) nextGait = newGait;
+    else nextGait = nextGait;
+
+    switch(nextGait) {
         case 0:
             currentGait = &stand;
-            std::cout << "Standing" << std::endl;
+            gaitType = STAND;
+            gaitName = "Stand";
             break;
         case 1:
+            currentGait = &trotWalk;
+            gaitType = TROT_WALK;
+            gaitName = "Trot Walk";
+            break;
+        case 2:
             currentGait = &trot;
-            std::cout << "Trotting" << std::endl;
+            gaitType = TROT;
+            gaitName = "Trot";
+            break;
+        case 3:
+            currentGait = &trotRun;
+            gaitType = TROT_RUN;
+            gaitName = "Trot Run";
             break;
     }
 }

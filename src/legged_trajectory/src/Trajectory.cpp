@@ -50,7 +50,7 @@ void Trajectory::trajGeneration(const Eigen::Vector3d& Vel, const std::array<Eig
         pre_cmdJoyF[i] = cmdJoyF[i];
     }
 
-    if(isWalking) gait->run();
+    if(gait->getGaitType() != STAND) gait->run();
 
     dYaw_des = cmdJoyF[2];
     Yaw_des += cmdJoyF[2]*dT;
@@ -64,19 +64,9 @@ void Trajectory::trajGeneration(const Eigen::Vector3d& Vel, const std::array<Eig
     Vcom_des = comTraj.getComVel();
     Acom_des = comTraj.getComAcc();
 
-    if(!jStick.walkEnable) isWalking = !(conState[0] && conState[1] && conState[2] && conState[3]);
-    else isWalking = jStick.walkEnable;
-    // if (jStick.walkEnable != isWalking && gait->getPhase(0) < 0.05) {
-    //     isWalking = jStick.walkEnable; // Durumu güncelle
-        
-    //     if (isWalking) {
-    //         gait->switchGait(1); // 1: Trot
-    //     } else {
-    //         gait->switchGait(0); // 0: Stand
-    //     }
-    // }
+    gait->switchGait(jStick.gait);
 
-    if(isWalking) Pcom_des = Pcom_act;
+    if(gait->getGaitType() != STAND) Pcom_des = Pcom_act;
     else Pcom_des = Pcom_des;
     Pcom_des(2) = comTraj.getComPos()(2);
 
