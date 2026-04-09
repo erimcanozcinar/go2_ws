@@ -30,7 +30,7 @@
 
 #include "legged_trajectory/Trajectory.hpp"
 #include "legged_estimator/StateEstimator.hpp"
-#include "legged_controllers/BalanceController/BalanceController.hpp"
+#include "legged_controllers/BalanceController/VMC.hpp"
 #include "legged_controllers/MPC/MPC.hpp"
 #include "legged_controllers/WBC/WBC.hpp"
 #include "rbdyn/RigidBodyModel.hpp"
@@ -84,7 +84,7 @@ private:
     Robot* unitreeGo2 = nullptr;
     Trajectory* traj = nullptr;    
     Estimator* estimator = nullptr;
-    BalanceController* balanceController = nullptr;
+    VMC* vmc = nullptr;
     ModelPredictiveControl* mpc = nullptr;
     WBC* wbc = nullptr;
 

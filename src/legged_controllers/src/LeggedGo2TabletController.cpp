@@ -22,7 +22,7 @@ namespace legged
     delete unitreeGo2;
     delete traj;
     delete estimator;
-    delete balanceController;
+    delete vmc;
     delete mpc;
     delete wbc;
   }//sub_command_.shutdown(); }
@@ -35,7 +35,7 @@ namespace legged
     unitreeGo2 = new Robot();
     traj = new Trajectory(0.002);
     estimator = new Estimator(unitreeGo2, 0.002);
-    balanceController = new BalanceController(&estResult);
+    vmc = new VMC(&estResult);
     mpc = new ModelPredictiveControl(&estResult, 0.002, 25);
     wbc = new WBC(unitreeGo2, &estResult, &lowStates);
     
@@ -211,8 +211,8 @@ namespace legged
     /* #endregion */ 
 
     /* #region: TRAJECTORY GENERATION WITH JOYSTICK */
-    traj->trajGeneration(estResult.vWorld, estResult.pFoot, estResult.pos, estResult.rWorld2Body);
-    // traj->trajGeneration(traj->Vcom_des, traj->pFoot, traj->Pcom_des, estResult.rWorld2Body);
+    // traj->trajGeneration(estResult.vWorld, estResult.pFoot, estResult.pos, estResult.rWorld2Body);
+    traj->trajGeneration(traj->Vcom_des, traj->pFoot, traj->Pcom_des, Eigen::Matrix3d::Identity());
     /* #endregion */
 
     /* #region: INVERSE KINEMATIC */
@@ -240,11 +240,11 @@ namespace legged
     /* #endregion */
 
     /* #region: FORCE DISTRIBUTION*/
-    // balanceController->setDesiredStates(traj->getDesiredStates());
-    // balanceController->run();
+    vmc->setDesiredStates(traj->getDesiredStates());
+    vmc->run();
 
-    mpc->setDesiredStates(traj->getDesiredStates());
-    mpc->run(traj->gait);
+    // mpc->setDesiredStates(traj->getDesiredStates());
+    // mpc->run(traj->gait);
 
     // wbc->setDesiredStates(traj->getDesiredStates());
     // wbc->prioritizedTaskExecution();
@@ -259,10 +259,10 @@ namespace legged
     /* #endregion */
 
     /* #region: GROUND REACTION FORCE AND FOOT IMPEDANCE */
-    footForce[0] = mpc->getFootForces()[0] + (1-traj->conState[0])*kpCartesian*(traj->pFoot[0] - estResult.pFoot[0]) + kdCartesian*(traj->vFoot[0]-estResult.vFoot[0]);
-    footForce[1] = mpc->getFootForces()[1] + (1-traj->conState[1])*kpCartesian*(traj->pFoot[1] - estResult.pFoot[1]) + kdCartesian*(traj->vFoot[1]-estResult.vFoot[1]);
-    footForce[2] = mpc->getFootForces()[2] + (1-traj->conState[2])*kpCartesian*(traj->pFoot[2] - estResult.pFoot[2]) + kdCartesian*(traj->vFoot[2]-estResult.vFoot[2]);
-    footForce[3] = mpc->getFootForces()[3] + (1-traj->conState[3])*kpCartesian*(traj->pFoot[3] - estResult.pFoot[3]) + kdCartesian*(traj->vFoot[3]-estResult.vFoot[3]);
+    footForce[0] = vmc->getFootForces()[0] + (1-traj->conState[0])*kpCartesian*(traj->pFoot[0] - estResult.pFoot[0]) + kdCartesian*(traj->vFoot[0]-estResult.vFoot[0]);
+    footForce[1] = vmc->getFootForces()[1] + (1-traj->conState[1])*kpCartesian*(traj->pFoot[1] - estResult.pFoot[1]) + kdCartesian*(traj->vFoot[1]-estResult.vFoot[1]);
+    footForce[2] = vmc->getFootForces()[2] + (1-traj->conState[2])*kpCartesian*(traj->pFoot[2] - estResult.pFoot[2]) + kdCartesian*(traj->vFoot[2]-estResult.vFoot[2]);
+    footForce[3] = vmc->getFootForces()[3] + (1-traj->conState[3])*kpCartesian*(traj->pFoot[3] - estResult.pFoot[3]) + kdCartesian*(traj->vFoot[3]-estResult.vFoot[3]);
     Tau_ff[0] = unitreeGo2->_RF.calcLegJac(lowStates.qJoint[0]).transpose()*footForce[0];
     Tau_ff[1] = unitreeGo2->_LF.calcLegJac(lowStates.qJoint[1]).transpose()*footForce[1];
     Tau_ff[2] = unitreeGo2->_RB.calcLegJac(lowStates.qJoint[2]).transpose()*footForce[2];
@@ -303,7 +303,7 @@ namespace legged
       if(dampingMode) {
         joints_[i].setCommand(0, 0, 0, 2, 0);
       } else {
-        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 0, 2, Tau_go2(i));
+        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 50, 5, 0);
       }
     }
 
