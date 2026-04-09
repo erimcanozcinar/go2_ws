@@ -70,7 +70,10 @@ void Trajectory::trajGeneration(const Eigen::Vector3d& Vel, const std::array<Eig
     else Pcom_des = Pcom_des;
     Pcom_des(2) = comTraj.getComPos()(2);
 
-
+    pRobotFrame[0] = _RF.footFrameBody;
+    pRobotFrame[1] = _LF.footFrameBody;
+    pRobotFrame[2] = _RB.footFrameBody;
+    pRobotFrame[3] = _LB.footFrameBody;
     for(int i = 0; i<4; i++) {
         footSwingTraj[i].setSwingTime(gait->getSwingPeriod());
         conState[i] = gait->getContactState(i);   
@@ -82,6 +85,7 @@ void Trajectory::trajGeneration(const Eigen::Vector3d& Vel, const std::array<Eig
             p0[i] = p0[i];
         } else {
             comTraj.calcStride(Vcmd, Vel.head(2), gait->getTimeSwingRemaining(i), gait->getStancePeriod());
+            pRobotFrame[i](1) += 0.2*yShift[i]*cmdJoyF[0];
             pYawCorrected[i] = RotateYaw(cmdJoyF[2]*gait->getStancePeriod()/2)*pRobotFrame[i];
             pf[i] = Pcom_act + rbody.transpose()*(pYawCorrected[i]) + comTraj.getStrideLength();
             pf[i](2) = 0.0;

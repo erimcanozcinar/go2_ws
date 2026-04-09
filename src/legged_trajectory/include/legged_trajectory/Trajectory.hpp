@@ -15,7 +15,7 @@ class Trajectory : public Robot {
     double dT;   
 
     ComTrajectory comTraj;
-    std::array<PolynomialSwingTrajectory, 4> footSwingTraj;
+    std::array<CycloidSwingTrajectory, 4> footSwingTraj;
 
     
     std::array<Eigen::Vector3d, 4> p0, pf;
@@ -24,11 +24,11 @@ class Trajectory : public Robot {
 
     double yaw_turn_rate;
     
+    double yShift[4] = {-0.08, 0.08, 0.08, -0.08};
         
     public:
     GamePad jStick;
     Gait* gait;
-    bool isWalking = true;
 
     double cmdJoyF[22] = {0}, pre_cmdJoyF[22] = {0};
 
