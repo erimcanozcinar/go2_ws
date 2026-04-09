@@ -82,7 +82,7 @@ class WBIC {
 
     Eigen::MatrixXd Sf;
     double mu = 0.5; // Friction coefficient
-    double Fzmax = 80.0; // Maximum normal force
+    double Fzmax = 150.0; // Maximum normal force
     Eigen::MatrixXd Uf, _Uf; // Friction cone
     Eigen::MatrixXd Uf_ieq_vec, _Uf_ieq_vec;
     Eigen::VectorXd Wf, Wfr;

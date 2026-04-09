@@ -243,7 +243,7 @@ namespace legged
       if(dampingMode) {
         joints_[i].setCommand(0, 0, 0, 2, 0);
       } else {
-        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 3, 0.3, Tau_go2(i));
+        joints_[i].setCommand(qJoint_ref(i), dqJoint_ref(i), 15, 1.5, Tau_go2(i)); // For real robot Kp = 15, Kd = 4
       }
     }
 
