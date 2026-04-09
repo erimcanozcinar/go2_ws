@@ -210,21 +210,21 @@ namespace legged
     /* #endregion */
 
     for (int i = 0; i < 4; i++) {
-      if(traj->conState[i] > 0) {
-          kpJoint[i] = Eigen::Vector3d(0,0,0).asDiagonal();
-          kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();            
-      }else {
-          kpJoint[i] = Eigen::Vector3d(3,3,3).asDiagonal();
-          kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();
-      }
-      // kpJoint[i] = Eigen::Vector3d(10,10,10).asDiagonal();
-      // kdJoint[i] = Eigen::Vector3d(1,1,1).asDiagonal();
-      Kp(i*3) = kpJoint[i](0);
-      Kp(i*3+1) = kpJoint[i](1);
-      Kp(i*3+2) = kpJoint[i](2);
-      Kd(i*3) = kdJoint[i](0);
-      Kd(i*3+1) = kdJoint[i](1);
-      Kd(i*3+2) = kdJoint[i](2);
+      // if(traj->conState[i] > 0) {
+      //     kpJoint[i] = Eigen::Vector3d(0,0,0).asDiagonal();
+      //     kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();            
+      // }else {
+      //     kpJoint[i] = Eigen::Vector3d(3,3,3).asDiagonal();
+      //     kdJoint[i] = Eigen::Vector3d(2,2,2).asDiagonal();
+      // }
+      kpJoint[i] = Eigen::Vector3d(20,15,15).asDiagonal();
+      kdJoint[i] = Eigen::Vector3d(2,1.5,1.5).asDiagonal();
+      Kp(i*3) = kpJoint[i](0,0);
+      Kp(i*3+1) = kpJoint[i](1,1);
+      Kp(i*3+2) = kpJoint[i](2,2);
+      Kd(i*3) = kdJoint[i](0,0);
+      Kd(i*3+1) = kdJoint[i](1,1);
+      Kd(i*3+2) = kdJoint[i](2,2);
     }
     
     Tau_go2 << Tau_ff[0], Tau_ff[1], Tau_ff[2], Tau_ff[3];
