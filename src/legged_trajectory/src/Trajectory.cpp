@@ -25,7 +25,7 @@ Trajectory::Trajectory(EstimatorData* _estData, double _dT) : dT(_dT), comTraj(_
     pRobotFrame[2] = _RB.footFrameBody;
     pRobotFrame[3] = _LB.footFrameBody;
 
-    Pcom << 0, 0, initZc;
+    _est->pos << 0, 0, initZc;
 
     pFoot = pFoot_initial;
     vFoot.fill(Eigen::Vector3d::Zero());
@@ -34,7 +34,7 @@ Trajectory::Trajectory(EstimatorData* _estData, double _dT) : dT(_dT), comTraj(_
 
     for(int i = 0; i<4; i++) { 
         footSwingTraj[i].setSwingTime(gait->getSwingPeriod());
-        pFootWorld[i] = Pcom + Eigen::Matrix3d::Identity()*(pHip[i] + pFoot[i]);
+        pFootWorld[i] = _est->pos + Eigen::Matrix3d::Identity()*(pHip[i] + pFoot[i]);
     }
     p0 = pFootWorld;
     
@@ -51,10 +51,12 @@ void Trajectory::trajGeneration() {
     }
 
     if(gait->getGaitType() != STAND) gait->run();
+    gait->switchGait(jStick.gait);
+
 
     dYaw_des = cmdJoyF[2];
-    // Yaw_des = _est->rpy(2);
-    Yaw_des += cmdJoyF[2]*dT;
+    Yaw_des = _est->rpy(2);
+    // Yaw_des += cmdJoyF[2]*dT;
 
     Vcmd = _est->rBody2World*Eigen::Vector3d(cmdJoyF[0], cmdJoyF[1], 0);
     Vcmd(2) = cmdJoyF[2];
@@ -65,7 +67,6 @@ void Trajectory::trajGeneration() {
     Vcom_des = comTraj.getComVel();
     Acom_des = comTraj.getComAcc();
 
-    gait->switchGait(jStick.gait);
 
     if(gait->getGaitType() != STAND) Pcom_des = _est->pos;
     else Pcom_des = Pcom_des;
@@ -81,7 +82,7 @@ void Trajectory::trajGeneration() {
         
         if(conState[i] == 1){
             if(gait->getPhase(i) < 0.5) {
-                p0[i] = Pcom + _est->rBody2World*(pHip[i] + _est->pFoot[i]);
+                p0[i] = _est->pos + _est->rBody2World*(pHip[i] + _est->pFoot[i]);
             }
             p0[i] = p0[i];
         } else {
@@ -100,7 +101,6 @@ void Trajectory::trajGeneration() {
         vFoot[i] = _est->rWorld2Body*(vFootWorld[i] - _est->vWorld);
         aFoot[i] = _est->rWorld2Body*(aFootWorld[i] - Acom_des);
     }
-    Pcom = _est->pos;
 
     _desiredStates.pos_des = Pcom_des;
     _desiredStates.rpy_des = Eigen::Vector3d(0, 0, Yaw_des);
