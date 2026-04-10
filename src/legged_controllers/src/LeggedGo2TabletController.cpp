@@ -33,7 +33,7 @@ namespace legged
 
     go2Model = RigidBodyModel("/home/erim/test_ws/src/legged_examples/legged_unitree/legged_unitree_description/urdf/go2/go2.urdf");
     unitreeGo2 = new Robot();
-    traj = new Trajectory(0.002);
+    traj = new Trajectory(&estResult, 0.002);
     estimator = new Estimator(unitreeGo2, 0.002);
     vmc = new VMC(&estResult);
     mpc = new ModelPredictiveControl(&estResult, 0.002, 25);
@@ -211,8 +211,7 @@ namespace legged
     /* #endregion */ 
 
     /* #region: TRAJECTORY GENERATION WITH JOYSTICK */
-    // traj->trajGeneration(estResult.vWorld, estResult.pFoot, estResult.pos, estResult.rWorld2Body);
-    traj->trajGeneration(traj->Vcom_des, traj->pFoot, traj->Pcom_des, Eigen::Matrix3d::Identity());
+    traj->trajGeneration();
     /* #endregion */
 
     /* #region: INVERSE KINEMATIC */

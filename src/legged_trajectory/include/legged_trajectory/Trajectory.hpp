@@ -12,6 +12,7 @@
 class Trajectory : public Robot {
     private:
     DesiredStates _desiredStates;
+    EstimatorData* _est;
     double dT;   
 
     ComTrajectory comTraj;
@@ -41,8 +42,8 @@ class Trajectory : public Robot {
 
     std::array<int, 4> conState;
 
-    Trajectory(double _dT = 0.001);
-    void trajGeneration(const Eigen::Vector3d& Vel, const std::array<Eigen::Vector3d, 4>& pFoot_fk, const Eigen::Vector3d& Pcom_act, const Eigen::Matrix3d& rbody);
+    Trajectory(EstimatorData* _estData, double _dT = 0.001);
+    void trajGeneration();
     DesiredStates* getDesiredStates() {return &_desiredStates;}
 };
 
