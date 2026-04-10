@@ -58,18 +58,18 @@ Gait::Gait(double dt_)
              GaitScheduler(0.5, 1.0, 0.5, 0.0, dt),
              GaitScheduler(0.5, 1.0, 0.5, 0.0, dt),
              GaitScheduler(0.5, 1.0, 0.5, 0.0, dt)};
-    trotWalk = {GaitScheduler(0.5, 0.6, 0.0, 0.0, dt),
-                GaitScheduler(0.5, 0.6, 0.5, 0.0, dt),
-                GaitScheduler(0.5, 0.6, 0.5, 0.0, dt),
-                GaitScheduler(0.5, 0.6, 0.0, 0.0, dt)};
-    trot = {GaitScheduler(0.5, 0.5, 0.0, 0.0, dt),
-            GaitScheduler(0.5, 0.5, 0.5, 0.0, dt),
-            GaitScheduler(0.5, 0.5, 0.5, 0.0, dt),
-            GaitScheduler(0.5, 0.5, 0.0, 0.0, dt)};
-    trotRun = {GaitScheduler(0.5, 0.4, 0.0, 0.0, dt),
-                GaitScheduler(0.5, 0.4, 0.5, 0.0, dt),
-                GaitScheduler(0.5, 0.4, 0.5, 0.0, dt),
-                GaitScheduler(0.5, 0.4, 0.0, 0.0, dt)};
+    trotWalk = {GaitScheduler(0.56, 0.6, 0.0, 0.0, dt),
+                GaitScheduler(0.56, 0.6, 0.5, 0.0, dt),
+                GaitScheduler(0.56, 0.6, 0.5, 0.0, dt),
+                GaitScheduler(0.56, 0.6, 0.0, 0.0, dt)};
+    trot = {GaitScheduler(0.56, 0.5, 0.0, 0.0, dt),
+            GaitScheduler(0.56, 0.5, 0.5, 0.0, dt),
+            GaitScheduler(0.56, 0.5, 0.5, 0.0, dt),
+            GaitScheduler(0.56, 0.5, 0.0, 0.0, dt)};
+    trotRun = {GaitScheduler(0.4, 0.35, 0.0, 0.0, dt),
+               GaitScheduler(0.4, 0.35, 0.5, 0.0, dt),
+               GaitScheduler(0.4, 0.35, 0.5, 0.0, dt),
+               GaitScheduler(0.4, 0.35, 0.0, 0.0, dt)};
     
     currentGait = &stand;
 }
