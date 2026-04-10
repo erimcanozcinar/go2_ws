@@ -156,6 +156,30 @@ Estimator::Estimator(Robot* model, double dT) : dt(dT), _model(model) {
     std::cout << "Sampling rate of state estimator: " << 1/dt << " Hz" << std::endl;
     basePosVelEstimator = BasePosVelEstimator(dt);
     baseOrientationEstimator = BaseOrientationEstimator(dt);
+
+    result.orientation << 1,0,0,0;
+    result.rpy.setZero();
+    result.rWorld2Body.setIdentity();
+    result.rBody2World.setIdentity();
+    result.pos << 0, 0, initZc;
+    
+    
+    result.vWorld.setZero();
+    result.aWorld.setZero();
+    result.omegaWorld.setZero();
+    result.domegaWorld.setZero();
+
+    result.vBody.setZero();
+    result.aBody.setZero();
+    result.omegaBody.setZero();
+    result.domegaBody.setZero();
+
+    result.ddqJoint.fill(Eigen::Vector3d::Zero());
+    
+    result.pFoot.fill(Eigen::Vector3d::Zero());
+    result.vFoot.fill(Eigen::Vector3d::Zero());
+    result.pFootBody.fill(Eigen::Vector3d::Zero());
+    result.vFootBody.fill(Eigen::Vector3d::Zero());
 }
 
 Quat Estimator::orientationOffset(const Quat& q_imu) {
