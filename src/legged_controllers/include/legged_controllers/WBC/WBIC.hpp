@@ -43,7 +43,7 @@ class WBIC {
     std::vector<Task*> _tasks, contactTasks;
 
     int dof = 18;
-    Eigen::MatrixXd Nt, Nt_pre, Npre; // Null Space Matrix
+    Eigen::MatrixXd Nt, Nt_pre, Ndyn,Npre; // Null Space Matrix
 
     Eigen::MatrixXd Jc, Jc_pinv, dJc, JcBar;
     Eigen::MatrixXd Jt, dJt, JtBar;     // Task Jacobian

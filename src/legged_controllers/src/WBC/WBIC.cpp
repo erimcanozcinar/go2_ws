@@ -14,6 +14,7 @@ WBIC::WBIC(Robot* _model, RigidBodyModel* _rigidBodyModel, EstimatorData* _estDa
 
     Nt.resize(dof, dof);
     Nt_pre.resize(dof, dof);
+    Ndyn.resize(dof, dof);
     Npre.resize(dof, dof);
     
     delta_q.resize(dof);
@@ -129,7 +130,7 @@ void WBIC::prioritizedTaskExecution() {
         pseudoInverse(Jc, 0.0001, Jc_pinv);
         Nt_pre = Eigen::MatrixXd::Identity(dof, dof) - Jc_pinv * Jc; // Nt = N0
         weightedPseudoInverse(Jc, _Minv, JcBar);
-        ddq_cmd = JcBar*(-dJc);
+        ddq_cmd = JcBar*(-dJc*genVel);
         Npre = Eigen::MatrixXd::Identity(dof, dof) - JcBar * Jc;
     } else {
         Nt_pre.setIdentity();
@@ -154,9 +155,10 @@ void WBIC::prioritizedTaskExecution() {
         dq_cmd += Jt_pre_pinv * (_tasks[i]->getDesVel() - Jt * dq_cmd);
         ddq_cmd += JtBar * (_tasks[i]->getCmdAcc() - dJt*genVel - Jt*ddq_cmd);
 
-
         Nt = (Eigen::MatrixXd::Identity(dof, dof) - Jt_pre_pinv * Jt_pre);
+        Ndyn = (Eigen::MatrixXd::Identity(dof, dof) - JtBar * JtPre);
         Nt_pre *= Nt; 
+        Npre *= Ndyn;
     }
 
     Eigen::VectorXd q_act(18);
@@ -214,10 +216,15 @@ void WBIC::run(const std::array<Eigen::Vector3d, 4>& Fc_des) {
 
     double f = solve_quadprog(G, g0, CE, ce0, CI, ci0, z);
 
-    for(int i = 0; i < 6; ++i) ddq_cmd(i) += z[i];
-    Eigen::VectorXd _Fr(12);
-    for(int i = 0; i < 12; i++) Fr_des(i) = z[i+6] + Fr_des(i);
-
+    if(std::isinf(f) || f >= 1.0e290) {
+        ddq_cmd = ddq_cmd;
+        Fr_des = Fr_des;
+        std::cout << "QuadProg solver failed" << std::endl;
+    } else {
+        for(int i = 0; i < 6; ++i) ddq_cmd(i) += z[i];
+        Eigen::VectorXd _Fr(12);
+        for(int i = 0; i < 12; i++) Fr_des(i) = z[i+6] + Fr_des(i);
+    }
 
     for(int i = 0; i < 4; i++) {
         _Jc.block(3*i,0,3,18) = _singleContactTasks[i]->getTaskJacobian();
