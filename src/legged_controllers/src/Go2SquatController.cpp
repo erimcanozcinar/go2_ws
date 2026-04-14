@@ -171,7 +171,7 @@ namespace legged
   {
     std::vector<double> joy_cmds(2, 0.0);
     joy_cmds[0] = msg->buttons[0];
-    joy_cmds[1] = msg->buttons[1];
+    joy_cmds[1] = msg->buttons[3];
     commands_buffer_.writeFromNonRT(joy_cmds);
   }
 
