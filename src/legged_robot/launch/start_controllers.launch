@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Go2 için denge ve yürüyüş kontrolcülerini yükler -->
+    <include file="$(find legged_controllers)/launch/load_controller_go2.launch"/>
+
+    <!-- GamePad Node'unu başlatır (SDL2 Joystick okuyucu) -->
+    <node pkg="legged_common" type="gamepad_node" name="gamepad_node" output="screen" />
+
+    <!-- Kontrolcü geçiş (switcher) scriptini başlatır -->
+    <node pkg="legged_robot" type="controller_switcher.py" name="controller_switcher" output="screen" />
+</launch>

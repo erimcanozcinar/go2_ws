@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Gazebo simülatörünü Go2 robotu ile başlatır -->
+    <include file="$(find legged_unitree_description)/launch/gazebo_sim.launch">
+        <arg name="robot_name" value="go2"/>
+    </include>
+</launch>
