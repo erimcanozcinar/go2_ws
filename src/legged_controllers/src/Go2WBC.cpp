@@ -29,7 +29,7 @@ namespace legged
 
   bool Go2WBC::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &n)
   {
-    ROS_INFO("TabletController | Init");
+    ROS_INFO("GO2WBC | Init");
 
     go2Model = RigidBodyModel("/home/erim/test_ws/src/legged_examples/legged_unitree/legged_unitree_description/urdf/go2/go2.urdf");
     unitreeGo2 = new Robot();
@@ -131,7 +131,8 @@ namespace legged
 
   void Go2WBC::starting(const ros::Time &time)
   {
-    ROS_INFO("TabletController | Starting");
+    ROS_INFO("GO2WBC | Starting");
+    traj->jStick->reset();
 
     lowStates.imu.orientation = estimator->orientationOffset(Quat(imu_.getOrientation()[3], 
                                                                  imu_.getOrientation()[0], 

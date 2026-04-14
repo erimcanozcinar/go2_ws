@@ -20,6 +20,7 @@
 #include <ros/time.h>
 
 #include <std_msgs/Float64MultiArray.h>
+#include <sensor_msgs/Joy.h>
 
 #include <eigen3/Eigen/Dense>
 
@@ -91,7 +92,7 @@ private:
 
     double Cx, Cz, Cz_init, Cx_init;
 
-    void commandCB(const std_msgs::Float64MultiArray& msg);
+    void commandCB(const sensor_msgs::Joy::ConstPtr& msg);
 }; // class
 
 } // namespace

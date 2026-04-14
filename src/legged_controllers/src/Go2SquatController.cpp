@@ -82,7 +82,7 @@ namespace legged
 
     commands_buffer_.writeFromNonRT(std::vector<double>(2, 0.0));
 
-    sub_command_ = n.subscribe("legged_squat_command", 1, &Go2SquatController::commandCB, this);
+    sub_command_ = n.subscribe("/joy", 1, &Go2SquatController::commandCB, this);
 
     return true;
   }
@@ -167,9 +167,12 @@ namespace legged
     }      
   }
 
-  void Go2SquatController::commandCB(const std_msgs::Float64MultiArray& msg)
+  void Go2SquatController::commandCB(const sensor_msgs::Joy::ConstPtr& msg)
   {
-    commands_buffer_.writeFromNonRT(msg.data);
+    std::vector<double> joy_cmds(2, 0.0);
+    joy_cmds[0] = msg->buttons[0];
+    joy_cmds[1] = msg->buttons[1];
+    commands_buffer_.writeFromNonRT(joy_cmds);
   }
 
 } // legged

@@ -129,6 +129,7 @@ namespace legged
   void Go2MPC::starting(const ros::Time &time)
   {
     ROS_INFO("Go2MPC | Starting");
+    traj->jStick->reset();
 
     lowStates.imu.orientation = estimator->orientationOffset(Quat(imu_.getOrientation()[3], 
                                                                  imu_.getOrientation()[0], 

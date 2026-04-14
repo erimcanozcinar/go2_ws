@@ -128,7 +128,8 @@ namespace legged
   void Go2BalanceController::starting(const ros::Time &time)
   {
     ROS_INFO("Go2BalanceController | Starting");
-
+    traj->jStick->reset();
+    
     lowStates.imu.orientation = estimator->orientationOffset(Quat(imu_.getOrientation()[3], 
                                                                  imu_.getOrientation()[0], 
                                                                  imu_.getOrientation()[1], 
