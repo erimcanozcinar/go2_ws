@@ -13,6 +13,7 @@
     <build_depend>cmake_clang_tools</build_depend>
     <depend>roscpp</depend>
     <depend>hardware_interface</depend>
+    <depend>sensor_msgs</depend>
 
     <export>
 

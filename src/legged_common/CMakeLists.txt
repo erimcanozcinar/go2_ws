@@ -6,6 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(catkin REQUIRED
         COMPONENTS
         roscpp
+        sensor_msgs
         hardware_interface
         )
 
@@ -38,6 +39,9 @@ add_library(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
+
+add_executable(gamepad_node src/GamePad_node.cpp)
+target_link_libraries(gamepad_node ${catkin_LIBRARIES} SDL2)
 
 #########################
 ###   CLANG TOOLING   ###
