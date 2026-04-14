@@ -21,21 +21,19 @@ class Trajectory : public Robot {
     
     std::array<Eigen::Vector3d, 4> p0, pf;
 
-    Eigen::Vector3d Vcmd;
+    double cmdJoy[4] = {0.0, 0.0, 0.0, initZc};
 
-    double yaw_turn_rate;
+    Eigen::Vector3d Vcmd;
     
     double yShift[4] = {-0.08, 0.08, 0.08, -0.08};
         
     public:
-    GamePad jStick;
+    GamePad* jStick;
     Gait* gait;
-
-    double cmdJoyF[22] = {0}, pre_cmdJoyF[22] = {0};
 
     Eigen::Vector3d Pcom, Vcom, Acom;
     Eigen::Vector3d Pcom_des, Vcom_des, Acom_des;
-    double Yaw_des, dYaw_des;
+
     std::array<Eigen::Vector3d, 4> pFoot, pFootWorld, pHip, pFoot_initial, pRobotFrame, pYawCorrected;
     std::array<Eigen::Vector3d, 4> vFoot, vFootWorld;
     std::array<Eigen::Vector3d, 4> aFoot, aFootWorld;
