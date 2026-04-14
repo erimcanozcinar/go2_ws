@@ -29,7 +29,7 @@ void BodyOriTask::calcTask(const Eigen::VectorXd& x_des, const Eigen::VectorXd& 
         TK::error = so3_error;
         TK::desVel = dx_des; 
         
-        TK::ddx_cmd = ddx_des + 100*TK::error + 10*(TK::desVel - estData->omegaBody);
+        TK::ddx_cmd = ddx_des + 100*TK::error + 10*(estData->rBody2World*(TK::desVel - estData->omegaBody));
 }
 
 void BodyOriTask::calcTaskJacobian() {
