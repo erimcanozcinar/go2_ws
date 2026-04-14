@@ -40,9 +40,6 @@ add_library(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-add_executable(gamepad_node src/GamePad_node.cpp)
-target_link_libraries(gamepad_node ${catkin_LIBRARIES} SDL2)
-
 #########################
 ###   CLANG TOOLING   ###
 #########################

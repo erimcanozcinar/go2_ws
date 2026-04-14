@@ -12,9 +12,9 @@ GamePad::GamePad() {
 }
 
 void GamePad::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
-    vX = LPF(-msg->axes[1], vX, 2*M_PI*0.2, 0.01);
-    vY = LPF(-msg->axes[0], vY, 2*M_PI*0.2, 0.01);
-    wZ = LPF(-msg->axes[2], wZ, 2*M_PI*0.2, 0.01);
+    vX = LPF(msg->axes[1], vX, 2*M_PI*0.2, 0.01);
+    vY = LPF(msg->axes[0], vY, 2*M_PI*0.2, 0.01);
+    wZ = LPF(msg->axes[2], wZ, 2*M_PI*0.2, 0.01);
     
     vBody << vX, 0.5*vY, 0.0;
     wBody << 0.0, 0.0, wZ;
@@ -26,7 +26,7 @@ void GamePad::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
     }
 
     if(fabs(msg->axes[6]) == 1 && prev_axes_state[6] == 0) {
-        selectedGait += msg->axes[6];
+        selectedGait -= msg->axes[6];
         if(selectedGait > 3) selectedGait = 1;
         else if(selectedGait < 1) selectedGait = 3;
         std::cout << "Selected gait: " << selectedGait << std::endl;
