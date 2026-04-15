@@ -11,13 +11,15 @@ class ControllerSwitcher:
         # Hangi tuşların hangi kontrolcüye geçeceğini belirleyelim
         # GamePad_node.cpp'deki SDL2 haritalamanıza göre buton indekslerini ayarlayın.
         # Örneğin: 0 (A/Çarpı), 1 (B/Yuvarlak), vb.
-        self.BTN_A = 1 # A (Çarpı) tuşuna basınca Squat'a geçsin
-        self.BTN_B = 2  # B (Yuvarlak) tuşuna basınca WBIC'e geçsin
+        self.BTN_A = 0 # A (Çarpı) tuşuna basınca Squat'a geçsin
+        self.BTN_B = 1  # B (Yuvarlak) tuşuna basınca WBIC'e geçsin
         self.BTN_LB = 4 # X (Kare) tuşuna basınca Yürüyüşe geçsin
+        self.BTN_PS = 10; # PS button on playstation controller
         
         self.prev_buttons = []
         self.prev_SQUAT_CMD = False
         self.prev_WBIC_CMD = False
+        self.prev_HELP_CMD = False
         
         # Mevcut çalışan kontrolcüyü takip edelim
         self.current_controller = None
@@ -39,12 +41,18 @@ class ControllerSwitcher:
     def joy_callback(self, msg):
         self.SQUAT_CMD = msg.buttons[self.BTN_A] and msg.buttons[self.BTN_LB]
         self.WBIC_CMD = msg.buttons[self.BTN_B] and msg.buttons[self.BTN_LB]
+        self.HELP_CMD = msg.buttons[self.BTN_PS]
         if not self.prev_buttons:
             self.prev_buttons = msg.buttons
             self.prev_SQUAT_CMD = self.SQUAT_CMD
             self.prev_WBIC_CMD = self.WBIC_CMD
+            self.prev_HELP_CMD = self.HELP_CMD
             return
 
+        # HELP FONKSIYONU
+        if self.HELP_CMD == 1 and self.prev_HELP_CMD == 0:
+            self.print_help_info()
+        
         # SQUAT KONTROLCÜSÜNE GEÇİŞ (Buton 0 - A)
         if self.SQUAT_CMD == 1 and self.prev_SQUAT_CMD == 0:
             if self.current_controller != 'controllers/go2_squat_controller':
@@ -73,6 +81,7 @@ class ControllerSwitcher:
         self.prev_buttons = msg.buttons
         self.prev_SQUAT_CMD = self.SQUAT_CMD
         self.prev_WBIC_CMD = self.WBIC_CMD
+        self.prev_HELP_CMD = self.HELP_CMD
 
     def call_switch_service(self, start, stop):
         rospy.loginfo(f"Switching controllers... Starting: {start}, Stopping: {stop}")
@@ -92,6 +101,23 @@ class ControllerSwitcher:
                 rospy.logwarn("Controller switch failed! Check if the controller is loaded.")
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
+
+    def print_help_info(self):
+        print("\n\n\n")
+        print("**************** BUTTON CONFIGURATIONS ****************")
+        print("*                                                     *")
+        print("*  L1 + X ------------------> Start Squat Controller  *")
+        print("*       Square -------------> Stand robot up          *")
+        print("*       Circle -------------> Sit robot down          *")
+        print("*                                                     *")
+        print("*  L1 + Circle -------------> Start WBIC Controller   *")
+        print("*       Options ------------> Walking mode on/off     *")
+        print("*       Dpad Left/Right ----> Change gait             *")
+        print("*                                                     *")
+        print("*  PS Button ---------------> Show this help          *")
+        print("*******************************************************")
+        print("\n\n\n")
+        return
 
 if __name__ == '__main__':
     try:

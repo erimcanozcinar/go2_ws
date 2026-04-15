@@ -14,7 +14,7 @@ GamePad::GamePad() {
 void GamePad::joyCallback(const sensor_msgs::Joy::ConstPtr& msg) {
     vX = LPF(msg->axes[1], vX, 2*M_PI*0.2, 0.01);
     vY = LPF(msg->axes[0], vY, 2*M_PI*0.2, 0.01);
-    wZ = LPF(msg->axes[2], wZ, 2*M_PI*0.2, 0.01);
+    wZ = LPF(msg->axes[3], wZ, 2*M_PI*0.2, 0.01);
     
     vBody << vX, 0.5*vY, 0.0;
     wBody << 0.0, 0.0, wZ;
