@@ -151,7 +151,10 @@ void BalanceController::calc_C_qp() {
     //      n^T]
     
     C_eigen.setZero();
-    
+    n = rBody_des*Eigen::Vector3d(0, 0, 1);
+    tx = Eigen::Vector3d(1, 0, 0) - (Eigen::Vector3d(1, 0, 0).dot(n))*n;
+    tx.normalize();
+    ty = n.cross(tx);
     // Build c matrix (5x3)
     Eigen::MatrixXd c(5, 3);
     c.row(0) = (-mu * n + tx).transpose();
