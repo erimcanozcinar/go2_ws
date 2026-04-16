@@ -16,7 +16,7 @@ class Trajectory : public Robot {
     double dT;   
 
     ComTrajectory comTraj;
-    std::array<CycloidSwingTrajectory, 4> footSwingTraj;
+    std::array<PolynomialSwingTrajectory, 4> footSwingTraj;
 
     
     std::array<Eigen::Vector3d, 4> p0, pf;
@@ -26,6 +26,9 @@ class Trajectory : public Robot {
     Eigen::Vector3d Vcmd;
     
     double yShift[4] = {-0.08, 0.08, 0.08, -0.08};
+
+    Eigen::Vector4d pfx, pfy, pfz;
+    Eigen::Vector2d slopeEstimation();
         
     public:
     GamePad* jStick;
