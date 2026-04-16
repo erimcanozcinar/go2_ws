@@ -67,17 +67,13 @@ WBIC::WBIC(Robot* _model, RigidBodyModel* _rigidBodyModel, EstimatorData* _estDa
     Uf_ieq_vec.setZero();
     _Uf_ieq_vec.resize(24,1);
     _Uf_ieq_vec.setZero();
-    Uf << 0, 0, 1,
-          1, 0, mu,
-          -1,0, mu,
-          0, 1, mu,
+    Uf << 0,  0,  1,
+          1,  0, mu,
+         -1,  0, mu,
+          0,  1, mu,
           0, -1, mu,
-          0, 0, -1;
-    Uf_ieq_vec << 0, 0, 0, 0, 0, -Fzmax;
-    for(int i = 0; i < 4; ++i) {
-        _Uf.block(6*i,3*i,6,3) = Uf;
-        _Uf_ieq_vec.block(6*i,0,6,1) = Uf_ieq_vec;
-    }
+          0,  0, -1;
+    Uf_ieq_vec << 0, 0, 0, 0, 0, -Fzmax;    
 
     Wf.resize(6, 1);
     Wf = Eigen::VectorXd::Ones(6)*0.1;
@@ -181,6 +177,11 @@ void WBIC::setEqualityConstraint() {
 }
 
 void WBIC::setInequalityConstraint() {
+    for(int i = 0; i < 4; ++i) {
+        _Uf.block(6*i,3*i,6,3) = Uf*R_des.transpose();
+        _Uf_ieq_vec.block(6*i,0,6,1) = Uf_ieq_vec;
+    }
+
     A_ineq.setZero();
     A_ineq.block(0,6,24,12) = _Uf;
     B_ineq = _Uf_ieq_vec - _Uf*Fr_des;
@@ -233,7 +234,7 @@ void WBIC::run(const std::array<Eigen::Vector3d, 4>& Fc_des) {
 }
 
 void WBIC::setDesiredStates(DesiredStates* _desiredStates) {
-    Eigen::Matrix3d R_des = RotateYaw(_desiredStates->rpy_des(2))*RotatePitch(_desiredStates->rpy_des(1))*RotateRoll(_desiredStates->rpy_des(0));
+    R_des = RotateYaw(_desiredStates->rpy_des(2))*RotatePitch(_desiredStates->rpy_des(1))*RotateRoll(_desiredStates->rpy_des(0));
     xDes.block(0,0,4,1) = rotationMatrixToQuaternion(R_des.transpose());
     xDes.block(4,0,3,1) = _desiredStates->pos_des;
     xDes.block(7,0,3,1) = _desiredStates->pFootWorld_des[0];

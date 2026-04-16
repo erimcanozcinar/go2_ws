@@ -30,6 +30,8 @@ class WBIC {
     void updateDynamics();
     void resizeMatrices(int _taskDim);
 
+    Eigen::Matrix3d R_des;
+
     Robot* model;
     RigidBodyModel* rbModel;
     EstimatorData* estData;
