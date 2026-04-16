@@ -5,7 +5,7 @@ void PolynomialSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d
 
     trajX = FuncPoly5th(t, 0, tSwing, p0(0), 0, 0, pf(0), 0, 0);
     trajY = FuncPoly5th(t, 0, tSwing, p0(1), 0, 0, pf(1), 0, 0);
-    trajZ = FuncPoly6th(t, 0, tSwing, 0, 0, 0, 0, 0, 0, Fh);
+    trajZ = FuncPoly6th(t, 0, tSwing, p0(2), 0, 0, pf(2), 0, 0, Fh);
 
     Pf << trajX(0), trajY(0), trajZ(0);
     Vf << trajX(1), trajY(1), trajZ(1);
@@ -127,13 +127,13 @@ void BezierSwingTrajectory::footStepPlanner(double phaseSwg, Eigen::Vector3d p0,
 
     double pZ, vZ, aZ;
     if(phaseSwg < 0.5) {
-        pZ = cubicBezier(0, Fh, phaseSwg*2);
-        vZ = cubicBezierFirstDerivative(0, Fh, phaseSwg*2, tSwing);
-        aZ = cubicBezierSecondDerivative(0, Fh, phaseSwg*2, tSwing);
+        pZ = cubicBezier(p0(2), p0(2)+Fh, phaseSwg*2);
+        vZ = cubicBezierFirstDerivative(p0(2), p0(2)+Fh, phaseSwg*2, tSwing);
+        aZ = cubicBezierSecondDerivative(p0(2), p0(2)+Fh, phaseSwg*2, tSwing);
     } else {
-        pZ = cubicBezier(Fh, 0, phaseSwg*2-1);
-        vZ = cubicBezierFirstDerivative(Fh, 0, phaseSwg*2-1, tSwing);
-        aZ = cubicBezierSecondDerivative(Fh, 0, phaseSwg*2-1, tSwing);
+        pZ = cubicBezier(p0(2)+Fh, pf(2), phaseSwg*2-1);
+        vZ = cubicBezierFirstDerivative(p0(2)+Fh, pf(2), phaseSwg*2-1, tSwing);
+        aZ = cubicBezierSecondDerivative(p0(2)+Fh, pf(2), phaseSwg*2-1, tSwing);
     }
 
     Pf << pX, pY, pZ;
