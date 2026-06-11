@@ -31,7 +31,7 @@ namespace legged
   {
     ROS_INFO("GO2WBIC | Init");
 
-    go2Model = RigidBodyModel("/home/erim/test_ws/src/legged_examples/legged_unitree/legged_unitree_description/urdf/go2/go2.urdf");
+    go2Model = RigidBodyModel("/home/erim/test_ws/src/legged_examples/legged_unitree/legged_unitree_description/urdf/go2/go2.urdf", ReferenceFrame::LOCAL);
     unitreeGo2 = new Robot();
     traj = new Trajectory(&estResult, 0.002);
     estimator = new Estimator(unitreeGo2, 0.002);
