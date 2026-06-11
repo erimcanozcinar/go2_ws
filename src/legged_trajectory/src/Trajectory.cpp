@@ -56,6 +56,16 @@ void Trajectory::trajGeneration() {
     Vcom_des = comTraj.getComVel();
     Acom_des = comTraj.getComAcc();
 
+    // if(gait->getGaitType() == STAND && prevGait != STAND) {
+    //     Pcom_des = _est->pos;
+    //     Pcom_des(2) = comTraj.getComPos()(2);
+    // } else {
+    //     if((Pcom_des(0)-_est->pos(0)) > 0.1) Pcom_des(0) = _est->pos(0) + 0.1;
+    //     if((Pcom_des(1)-_est->pos(1)) > 0.1) Pcom_des(1) = _est->pos(1) + 0.1;
+    //     if((Pcom_des(0)-_est->pos(0)) < -0.1) Pcom_des(0) = _est->pos(0) - 0.1;
+    //     if((Pcom_des(1)-_est->pos(1)) < -0.1) Pcom_des(1) = _est->pos(1) - 0.1;
+    // }
+    // prevGait = gait->getGaitType();
 
     if(gait->getGaitType() != STAND) Pcom_des = _est->pos;
     else Pcom_des = Pcom_des;
@@ -76,7 +86,7 @@ void Trajectory::trajGeneration() {
             p0[i] = p0[i];
         } else {
             comTraj.calcStride(Vcmd, _est->vWorld.head(2), gait->getTimeSwingRemaining(i), gait->getStancePeriod());
-            // pRobotFrame[i](1) += 0.2*yShift[i]*jStick->vBody(0);
+            pRobotFrame[i](1) += 0.2*yShift[i]*jStick->vBody(0);
             pYawCorrected[i] = RotateYaw(jStick->wBody(2)*gait->getStancePeriod()/2)*pRobotFrame[i];
             pf[i] = _est->pos + _est->rBody2World*(pYawCorrected[i]) + comTraj.getStrideLength();
             // pf[i](2) = p0[i](2);
@@ -98,7 +108,7 @@ void Trajectory::trajGeneration() {
     Eigen::Vector2d estRP = slopeEstimation();
 
     _desiredStates.pos_des = Pcom_des;
-    _desiredStates.rpy_des = Eigen::Vector3d(estRP(0)*0, estRP(1), _est->rpy(2)  + dT*jStick->wBody(2));
+    _desiredStates.rpy_des = Eigen::Vector3d(estRP(0), estRP(1), _est->rpy(2)  + dT*jStick->wBody(2));
 
     _desiredStates.vWorld_des = Vcom_des;
     _desiredStates.aWorld_des = Acom_des;

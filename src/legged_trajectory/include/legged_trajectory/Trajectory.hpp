@@ -20,12 +20,11 @@ class Trajectory : public Robot {
 
     
     std::array<Eigen::Vector3d, 4> p0, pf;
-
-    double cmdJoy[4] = {0.0, 0.0, 0.0, initZc};
+    GaitType prevGait;
 
     Eigen::Vector3d Vcmd;
     
-    double yShift[4] = {-0.08, 0.08, 0.08, -0.08};
+    double yShift[4] = {-0.08, 0.08, 0.16, -0.16};
 
     Eigen::Vector4d pfx, pfy, pfz;
     Eigen::Vector2d slopeEstimation();
