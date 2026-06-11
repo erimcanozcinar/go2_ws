@@ -1,0 +1,14 @@
+<launch>
+    <arg name="robot_type" default="go2"/>
+
+    <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go2/go2.urdf"/>
+
+    <arg name="model" default="$(find legged_unitree_description)/urdf/go2/go2.urdf"/>
+    <param name="legged_robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+    <rosparam file="$(find legged_unitree_hw)/config/$(arg robot_type).yaml" command="load"/>
+
+    <param name="robot_type" value="$(arg robot_type)"/>
+
+    <node name="legged_unitree_hw" pkg="legged_unitree_hw" type="legged_unitree_hw_go2" respawn="false" clear_params="true" output="screen"/>
+</launch>

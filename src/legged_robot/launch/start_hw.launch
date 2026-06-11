@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Gazebo simülatörünü Go2 robotu ile başlatır -->
+    <include file="$(find legged_unitree_hw)/launch/legged_unitree_hw_go2.launch">
+    </include>
+</launch>
